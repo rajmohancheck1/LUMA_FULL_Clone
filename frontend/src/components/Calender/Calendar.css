@@ -1,0 +1,246 @@
+.calendar-page {
+  display: flex;
+  min-height: calc(100vh - 64px);
+  background-color: #1a1a1a;
+  color: #ffffff;
+}
+
+.sidebar {
+  width: 250px;
+  background-color: #1a1a1a;
+  padding: 20px;
+  border-right: 1px solid #333;
+}
+
+.sidebar h3 {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 15px;
+}
+
+.live-streams {
+  color: #666;
+  font-size: 13px;
+}
+
+.main-calendar {
+  flex: 1;
+  padding: 20px;
+}
+
+.calendar-header {
+  margin-bottom: 20px;
+}
+
+.month-navigation {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.nav-button {
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  padding: 5px;
+  transition: color 0.2s;
+}
+
+.nav-button:hover {
+  color: #fff;
+}
+
+.month-navigation h2 {
+  color: #dc2626;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  background-color: #333;
+  border: 1px solid #333;
+  padding: 1px;
+}
+
+.weekday-header {
+  background-color: #1a1a1a;
+  padding: 10px;
+  text-align: center;
+  font-size: 14px;
+  color: #666;
+}
+
+.calendar-day {
+  background-color: #2d2d2d;
+  min-height: 120px;
+  padding: 10px;
+  position: relative;
+  transition: background-color 0.2s;
+  cursor: pointer;
+}
+
+.calendar-day:hover {
+  background-color: #333;
+}
+
+.day-number {
+  font-size: 14px;
+  margin-bottom: 10px;
+  color: #fff;
+}
+
+.other-month {
+  background-color: #262626;
+}
+
+.other-month .day-number {
+  color: #666;
+}
+
+.day-events {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.event-item {
+  font-size: 13px;
+  padding: 2px 5px;
+  color: #4ade80;
+}
+
+.event-meeting {
+  color: #4ade80;
+  background-color: rgba(74, 222, 128, 0.1);
+}
+
+.event-general {
+  color: #4ade80;
+  background-color: rgba(74, 222, 128, 0.1);
+}
+
+.loading, .error {
+  color: #fff;
+  text-align: center;
+  padding: 20px;
+}
+
+/* Add styles for the current day */
+.current-day {
+  background-color: rgba(74, 222, 128, 0.05);
+}
+
+.current-day .day-number {
+  color: #4ade80;
+  font-weight: bold;
+}
+
+/* Add these styles to your existing CSS */
+
+.has-events {
+  background-color: #3d4a3d !important;
+}
+
+.has-events:hover {
+  background-color: #465446 !important;
+}
+
+.has-events .event-item {
+  color: #4ade80;
+  padding-left: 12px;
+  position: relative;
+}
+
+.has-events .event-item:before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: #4ade80;
+}
+
+.event-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #2d2d2d;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid #333;
+}
+
+.modal-header h3 {
+  color: #fff;
+  font-size: 1.25rem;
+  margin: 0;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.close-button:hover {
+  color: #fff;
+}
+
+.modal-body {
+  padding: 1rem;
+}
+
+.modal-event {
+  padding: 0.75rem;
+  border-radius: 4px;
+  background-color: rgba(74, 222, 128, 0.1);
+  margin-bottom: 0.75rem;
+}
+
+.modal-event:last-child {
+  margin-bottom: 0;
+}
+
+.event-title {
+  color: #4ade80;
+  font-size: 1.1rem;
+  margin: 0 0 0.5rem 0;
+}
+
+.event-time {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0.5rem 0 0 0;
+}
+
+.other-month.has-events {
+  background-color: #2d3a2d !important;
+}
+
+.other-month .day-number {
+  color: #666;
+}
+ 

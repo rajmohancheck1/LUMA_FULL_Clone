@@ -1,0 +1,590 @@
+.browse-events {
+    font-family: Arial, sans-serif;
+    padding: 30px;
+    /* Increased padding for more space */
+    color: #fff;
+    background-color: #1e1e1e;
+    overflow: hidden;
+    
+    
+    /* Rounded corners for the whole container */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    /* Soft shadow around the container */
+}
+
+.title {
+    font-size: 36px;
+    /* Larger title size */
+    font-weight: bold;
+    margin-bottom: 15px;
+    /* Space below the title */
+    color: #f2f2f2;
+    /* Lighter color for the title */
+}
+
+.description {
+    font-size: 16px;
+    margin-bottom: 20px;
+    color: #ccc;
+    /* Slightly lighter color for description */
+}
+
+.section {
+    margin-top: 40px;
+    /* Increased margin between sections */
+}
+
+h2 {
+    font-size: 24px;
+    margin-bottom: 15px;
+    color: #fff;
+    /* White color for the section titles */
+}
+
+.region-tabs {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+    justify-content: center;
+    /* Center align the region tabs */
+}
+
+.tab {
+    padding: 12px 25px;
+    border: none;
+    background-color: #333;
+    color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+    /* Smooth transition for hover */
+}
+
+.tab.active {
+    background-color: #007bff;
+}
+
+.tab:hover {
+    background-color: #0056b3;
+    /* Hover effect */
+}
+
+.local-events {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    /* Center align the local event cards */
+}
+
+.city-card {
+    background-color: #2b2b2b;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    width: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    /* Added shadow to the city cards */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    /* Smooth hover effect */
+}
+
+.city-card:hover {
+    transform: translateY(-5px);
+    /* Hover effect: lift the card */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    /* More prominent shadow on hover */
+}
+
+.city-name {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.event-count {
+    font-size: 14px;
+    color: #aaa;
+    margin-top: 5px;
+}
+
+.categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+.category-card {
+    background-color: #2b2b2b;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    width: 180px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.category-name {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.event-count {
+    font-size: 14px;
+    color: #aaa;
+    margin-top: 5px;
+}
+
+.calendars {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+.calendar-card {
+    background-color: #2b2b2b;
+    padding: 20px;
+    border-radius: 10px;
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.calendar-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.calendar-name {
+    font-size: 18px;
+    font-weight: bold;
+    color: #fff;
+}
+
+.calendar-description {
+    font-size: 14px;
+    color: #aaa;
+    margin: 10px 0;
+}
+
+.subscribe-btn {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.subscribe-btn:hover {
+    background-color: #0056b3;
+}
+
+/* General section styling */
+.section {
+    margin-top: 40px;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background-color: #2b2b2b;
+    /* Background color for sections */
+}
+
+.section:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Individual section background colors */
+
+
+/* Section titles */
+.section-title {
+    font-size: 28px;
+    font-weight: bold;
+    color: #f2f2f2;
+    /* Light title color, matching the event cards */
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+/* Section descriptions */
+.section-description {
+    font-size: 16px;
+    color: #aaa;
+    /* Slightly lighter description color, consistent with event details */
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+/* Inner content styling for alignment */
+.local-events,
+.categories,
+.calendars {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+/* Section background styles (matching event card theme) */
+.section {
+    margin-top: 40px;
+    padding: 30px;
+    border-radius: 15px;
+    background-color: #2b2b2b;
+    /* Matching the event card background color */
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+    /* Same box-shadow as event cards */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.section:hover {
+    transform: translateY(-5px);
+    /* Lift effect on hover */
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3);
+    /* Prominent shadow on hover */
+}
+
+/* City card container styling */
+.local-events {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    /* Center-align all cards */
+}
+
+/* Individual city card */
+.city-card {
+    background-color: #2b2b2b;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    width: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(245, 245, 245, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.city-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(245, 245, 245, 0.3);
+}
+
+/* Icon styling */
+.city-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 18px;
+    color: #fff;
+    /* Icon color */
+}
+
+/* Text styling */
+.city-name {
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+}
+
+.event-count {
+    font-size: 14px;
+    color: #aaa;
+    margin-top: 5px;
+}
+
+/* Example color themes for different cards */
+.city-card:nth-child(1) .city-icon {
+    background-color: #f39c12;
+    /* Orange */
+}
+
+.city-card:nth-child(2) .city-icon {
+    background-color: #27ae60;
+    /* Green */
+}
+
+.city-card:nth-child(3) .city-icon {
+    background-color: #8e44ad;
+    /* Purple */
+}
+
+.city-card:nth-child(4) .city-icon {
+    background-color: #e74c3c;
+    /* Red */
+}
+
+.city-card:nth-child(5) .city-icon {
+    background-color: #3498db;
+    /* Blue */
+}
+
+.city-card:nth-child(6) .city-icon {
+    background-color: #16a085;
+    /* Teal */
+}
+
+.city-card:nth-child(7) .city-icon {
+    background-color: #d35400;
+    /* Dark Orange */
+}
+
+.city-card:nth-child(8) .city-icon {
+    background-color: #9b59b6;
+    /* Violet */
+}
+
+.city-card:nth-child(9) .city-icon {
+    background-color: #2ecc71;
+    /* Light Green */
+}
+
+.city-card:nth-child(10) .city-icon {
+    background-color: #e67e22;
+    /* Dark Orange */
+}
+
+.city-card:nth-child(11) .city-icon {
+    background-color: #34495e;
+    /* Navy Blue */
+}
+
+.city-card:nth-child(12) .city-icon {
+    background-color: #e84393;
+    /* Pink */
+}
+
+.city-card:nth-child(13) .city-icon {
+    background-color: #1abc9c;
+    /* Aqua */
+}
+
+.city-card:nth-child(14) .city-icon {
+    background-color: #2980b9;
+    /* Bright Blue */
+}
+/* Browse by Category Section */
+.browse-category {
+    margin: 40px 0;
+    text-align: center;
+}
+
+.browse-category h2 {
+    font-size: 24px;
+    color: #fff;
+    margin-bottom: 20px;
+}
+
+.categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+/* Individual Category Card */
+.category-card {
+    background-color: #2b2b2b;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    width: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(245, 245, 245, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(245, 245, 245, 0.3);
+}
+
+/* Icon Styling */
+.category-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 18px;
+    color: #fff;
+    /* Icon Color */
+}
+
+/* Text Styling */
+.category-name {
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+}
+
+.event-count {
+    font-size: 14px;
+    color: #aaa;
+    margin-top: 5px;
+}
+
+/* Colors for Category Icons */
+.category-card:nth-child(1) .category-icon {
+    background-color: #f39c12;
+    /* Orange */
+}
+
+.category-card:nth-child(2) .category-icon {
+    background-color: #27ae60;
+    /* Green */
+}
+
+.category-card:nth-child(3) .category-icon {
+    background-color: #3498db;
+    /* Blue */
+}
+
+.category-card:nth-child(4) .category-icon {
+    background-color: #9b59b6;
+    /* Violet */
+}
+
+.category-card:nth-child(5) .category-icon {
+    background-color: #e67e22;
+    /* Dark Orange */
+}
+.category-card:nth-child(6) .category-icon {
+    background-color: #f39c12;
+    /* Orange */
+}
+
+.category-card:nth-child(7) .category-icon {
+    background-color: #27ae60;
+    /* Green */
+}
+
+.category-card:nth-child(8) .category-icon {
+    background-color: #3498db;
+    /* Blue */
+}
+
+.category-card:nth-child(9) .category-icon {
+    background-color: #9b59b6;
+    /* Violet */
+}
+
+.category-card:nth-child(10) .category-icon {
+    background-color: #e67e22;
+    /* Dark Orange */
+}/* Featured Calendars Section */
+.featured-calendars {
+    margin: 40px 0;
+    text-align: center;
+}
+
+.featured-calendars h2 {
+    font-size: 24px;
+    color: #fff;
+    margin-bottom: 20px;
+}
+
+.calendars {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+/* Individual Calendar Card */
+.calendar-card {
+    background-color: #2b2b2b;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(245, 245, 245, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.calendar-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(245, 245, 245, 0.3);
+}
+
+/* Icon Styling */
+.calendar-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 15px;
+    font-size: 20px;
+    color: #fff;
+    /* Icon Color */
+    background-color: #34495e;
+    /* Default Icon Background */
+}
+
+/* Text Styling */
+.calendar-name {
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 10px;
+}
+
+.calendar-description {
+    font-size: 14px;
+    color: #aaa;
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+
+/* Subscribe Button */
+.subscribe-btn {
+    background-color: #3498db;
+    color: #fff;
+    padding: 10px 20px;
+    font-size: 14px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.subscribe-btn:hover {
+    background-color: #2980b9;
+}
