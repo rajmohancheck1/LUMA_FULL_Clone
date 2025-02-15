@@ -14,6 +14,7 @@ const {
     updateEventFeedback,
     sendBlast
 } = require('../controllers/eventController');
+const { getEventInsights } = require('../controllers/eventInsightsController');
 
 // Create a sub-router for user-specific routes
 const userRouter = express.Router();
@@ -34,5 +35,6 @@ router.delete('/:id', protect, deleteEvent);
 router.put('/:id/reminders', protect, updateEventReminders);
 router.put('/:id/feedback', protect, updateEventFeedback);
 router.post('/:id/blasts', protect, sendBlast);
+router.get('/:id/insights', protect, getEventInsights);
 
 module.exports = router;
