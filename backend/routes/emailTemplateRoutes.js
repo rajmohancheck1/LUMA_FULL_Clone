@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { protect, authorize } = require('../middleware/authMiddleware');
+const { protect } = require('../middleware/authMiddleware');
 const {
   createTemplate,
   getTemplates,
@@ -8,17 +8,15 @@ const {
   deleteTemplate
 } = require('../controllers/emailTemplateController');
 
+// All routes require authentication
 router.use(protect);
-router.use(authorize('organizer', 'admin'));
 
-router
-  .route('/')
+router.route('/')
   .post(createTemplate)
   .get(getTemplates);
 
-router
-  .route('/:id')
+router.route('/:id')
   .put(updateTemplate)
   .delete(deleteTemplate);
 
-module.exports = router; 
+module.exports = router;

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import Button from '../Button';
 import { useNotification } from '../../context/NotificationContext';
@@ -31,6 +31,15 @@ const EventOverview = ({ event, onUpdate }) => {
   });
 
   const [image, setImage] = useState(null);
+  const [currentImage, setCurrentImage] = useState('/default-event.jpg');
+
+  useEffect(() => {
+    if (event?.image) {
+      setCurrentImage(`${process.env.REACT_APP_API_URL}/uploads/events/${event.image}?t=${Date.now()}`);
+    } else {
+      setCurrentImage('/default-event.jpg');
+    }
+  }, [event?.image]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -39,15 +48,45 @@ const EventOverview = ({ event, onUpdate }) => {
       Object.keys(formData).forEach(key => {
         formDataToSend.append(key, formData[key]);
       });
+      
+      // Convert date and time to ISO string
+      const dateTime = new Date(formData.date + 'T' + formData.time);
+      formDataToSend.set('date', dateTime.toISOString());
+      
       if (image) {
         formDataToSend.append('image', image);
       }
+      
       await onUpdate(formDataToSend);
       setIsEditing(false);
       showNotification('Event updated successfully', 'success');
     } catch (error) {
       showNotification('Failed to update event', 'error');
     }
+  };
+
+  const handleImageUpload = async () => {
+    if (image) {
+      const formDataToSend = new FormData();
+      formDataToSend.append('image', image);
+      try {
+        await onUpdate(formDataToSend);
+        setIsImageModalOpen(false);
+        setImage(null);
+        showNotification('Image updated successfully', 'success');
+      } catch (error) {
+        showNotification('Failed to update image', 'error');
+      }
+    }
+  };
+
+  const handleImageError = (e) => {
+    console.log('Image failed to load:', {
+      currentImage,
+      eventImage: event.image,
+      apiUrl: process.env.REACT_APP_API_URL
+    });
+    e.target.src = '/default-event.jpg';
   };
 
   const renderStatCard = (title, value, icon) => (
@@ -141,22 +180,19 @@ const EventOverview = ({ event, onUpdate }) => {
               </dl>
             </div>
 
-            <div>
-              <h3 className="text-lg font-medium">Event Image</h3>
-              <div className="mt-2">
-                <img
-                  src={event.imageUrl || '/default-event.jpg'}
-                  alt={event.title}
-                  className="rounded-lg object-cover h-48 w-full"
-                />
-                <Button
-                  variant="secondary"
-                  className="mt-2"
-                  onClick={() => setIsImageModalOpen(true)}
-                >
-                  Change Image
-                </Button>
-              </div>
+            <div className="relative">
+              <img
+                src={currentImage}
+                alt={event.title}
+                className="w-full h-64 object-cover rounded-lg"
+                onError={handleImageError}
+              />
+              <button
+                onClick={() => setIsImageModalOpen(true)}
+                className="absolute bottom-4 right-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Change Image
+              </button>
             </div>
           </div>
         </div>
@@ -314,94 +350,54 @@ const EventOverview = ({ event, onUpdate }) => {
         </form>
       </Modal>
 
-      {/* Image Modal */}
+      {/* Image Upload Modal */}
       <Modal
         isOpen={isImageModalOpen}
-        onClose={() => setIsImageModalOpen(false)}
-        title="Change Event Image"
+        onClose={() => {
+          setIsImageModalOpen(false);
+          setImage(null);
+        }}
+        title="Update Event Image"
       >
         <div className="space-y-4">
-          <div className="mt-2">
-            <div className="flex justify-center px-6 pt-5 pb-6 border-2 border-gray-600 border-dashed rounded-md">
-              <div className="space-y-1 text-center">
-                <svg
-                  className="mx-auto h-12 w-12 text-gray-400"
-                  stroke="currentColor"
-                  fill="none"
-                  viewBox="0 0 48 48"
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                    strokeWidth={2}
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-                <div className="flex text-sm text-gray-400">
-                  <label
-                    htmlFor="file-upload"
-                    className="relative cursor-pointer rounded-md font-medium text-blue-500 hover:text-blue-400"
-                  >
-                    <span>Upload a file</span>
-                    <input
-                      id="file-upload"
-                      name="file-upload"
-                      type="file"
-                      className="sr-only"
-                      accept="image/*"
-                      onChange={(e) => setImage(e.target.files[0])}
-                    />
-                  </label>
-                  <p className="pl-1">or drag and drop</p>
-                </div>
-                <p className="text-xs text-gray-400">PNG, JPG, GIF up to 10MB</p>
-              </div>
-            </div>
+          <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setImage(e.target.files[0])}
+              className="w-full"
+            />
           </div>
-
           {image && (
             <div className="mt-4">
-              <h4 className="text-sm font-medium text-gray-300">Preview</h4>
-              <div className="mt-2">
-                <img
-                  src={URL.createObjectURL(image)}
-                  alt="Preview"
-                  className="rounded-lg object-cover h-48 w-full"
-                />
-              </div>
+              <img
+                src={URL.createObjectURL(image)}
+                alt="Preview"
+                className="w-full h-48 object-cover rounded-lg"
+              />
             </div>
           )}
-
-          <div className="mt-6 flex justify-end space-x-3">
-            <Button 
-              variant="secondary" 
+          <div className="flex justify-end space-x-4">
+            <button
               onClick={() => {
-                setImage(null);
                 setIsImageModalOpen(false);
+                setImage(null);
               }}
+              className="px-4 py-2 text-gray-500 hover:text-gray-700"
             >
               Cancel
-            </Button>
-            <Button
-              onClick={async () => {
-                if (image) {
-                  const formDataToSend = new FormData();
-                  formDataToSend.append('image', image);
-                  try {
-                    await onUpdate(formDataToSend);
-                    setIsImageModalOpen(false);
-                    setImage(null);
-                    showNotification('Image updated successfully', 'success');
-                  } catch (error) {
-                    showNotification('Failed to update image', 'error');
-                  }
-                }
-              }}
+            </button>
+            <button
+              onClick={handleImageUpload}
               disabled={!image}
+              className={`px-4 py-2 rounded-lg ${
+                image
+                  ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                  : 'bg-gray-400 cursor-not-allowed text-gray-200'
+              }`}
             >
               Upload
-            </Button>
+            </button>
           </div>
         </div>
       </Modal>
@@ -409,4 +405,4 @@ const EventOverview = ({ event, onUpdate }) => {
   );
 };
 
-export default EventOverview; 
+export default EventOverview;

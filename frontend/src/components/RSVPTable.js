@@ -29,7 +29,7 @@ const RSVPTable = ({ rsvps }) => {
           </tr>
         </thead>
         <tbody className="bg-gray-900 divide-y divide-gray-700">
-          {rsvps.map(rsvp => (
+          {rsvps.filter(rsvp => rsvp.event).map(rsvp => (
             <tr key={rsvp._id} className="hover:bg-gray-800 transition-colors duration-200">
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="text-sm font-medium text-gray-200">{rsvp.event.title}</div>

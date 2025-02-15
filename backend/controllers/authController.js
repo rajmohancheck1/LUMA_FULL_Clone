@@ -6,7 +6,7 @@ const { generateToken } = require('../config/jwt');
 // @access  Public
 const register = async (req, res) => {
     try {
-        const { name, email, password, role } = req.body;
+        const { name, email, password } = req.body;
 
         // Check if user exists
         const userExists = await User.findOne({ email });
@@ -17,12 +17,12 @@ const register = async (req, res) => {
             });
         }
 
-        // Create user
+        // Create user with default role 'user'
         const user = await User.create({
             name,
             email,
             password,
-            role: role || 'user'
+            role: 'user'
         });
 
         if (user) {
@@ -110,4 +110,4 @@ module.exports = {
     register,
     login,
     getMe
-}; 
+};

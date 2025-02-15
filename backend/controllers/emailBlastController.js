@@ -17,6 +17,14 @@ exports.createEmailBlast = async (req, res) => {
       });
     }
 
+    // Check if user is event organizer
+    if (event.organizer.toString() !== req.user.id) {
+      return res.status(403).json({
+        success: false,
+        message: 'Not authorized to send email blasts for this event'
+      });
+    }
+
     // Create email blast
     const emailBlast = await EmailBlast.create({
       event: eventId,
@@ -48,6 +56,23 @@ exports.createEmailBlast = async (req, res) => {
 exports.getEmailBlasts = async (req, res) => {
   try {
     const { eventId } = req.params;
+    
+    const event = await Event.findById(eventId);
+    if (!event) {
+      return res.status(404).json({
+        success: false,
+        message: 'Event not found'
+      });
+    }
+
+    // Check if user is event organizer
+    if (event.organizer.toString() !== req.user.id) {
+      return res.status(403).json({
+        success: false,
+        message: 'Not authorized to view email blasts for this event'
+      });
+    }
+
     const emailBlasts = await EmailBlast.find({ event: eventId })
       .sort('-createdAt');
 
@@ -101,29 +126,32 @@ const sendEmailBlast = async (blastId) => {
 
     await Promise.all(emailPromises);
 
-    // Update email blast status
-    await EmailBlast.findByIdAndUpdate(blastId, {
-      status: 'sent',
-      sentAt: new Date(),
-      recipientCount: recipients.length
-    });
+    // Update blast status
+    emailBlast.status = 'sent';
+    emailBlast.sentAt = new Date();
+    await emailBlast.save();
 
   } catch (error) {
     console.error('Error sending email blast:', error);
-    await EmailBlast.findByIdAndUpdate(blastId, {
-      status: 'failed'
-    });
+    throw error;
   }
 };
 
-// Track email opens
 exports.trackEmailOpen = async (req, res) => {
   try {
     const { blastId } = req.params;
-    await EmailBlast.findByIdAndUpdate(blastId, {
-      $inc: { opens: 1 }
-    });
-    
+    const emailBlast = await EmailBlast.findById(blastId);
+
+    if (!emailBlast) {
+      return res.status(404).json({
+        success: false,
+        message: 'Email blast not found'
+      });
+    }
+
+    emailBlast.opens = (emailBlast.opens || 0) + 1;
+    await emailBlast.save();
+
     // Return a 1x1 transparent GIF
     res.writeHead(200, {
       'Content-Type': 'image/gif',
@@ -136,29 +164,37 @@ exports.trackEmailOpen = async (req, res) => {
   }
 };
 
-// Track email clicks
 exports.trackEmailClick = async (req, res) => {
   try {
     const { blastId } = req.params;
-    const { redirect } = req.query;
+    const { url } = req.query;
 
-    await EmailBlast.findByIdAndUpdate(blastId, {
-      $inc: { clicks: 1 }
-    });
+    const emailBlast = await EmailBlast.findById(blastId);
+    if (!emailBlast) {
+      return res.status(404).json({
+        success: false,
+        message: 'Email blast not found'
+      });
+    }
 
-    res.redirect(redirect || '/');
+    emailBlast.clicks = (emailBlast.clicks || 0) + 1;
+    await emailBlast.save();
+
+    res.redirect(url);
   } catch (error) {
     console.error('Error tracking email click:', error);
-    res.redirect('/');
+    res.status(500).json({
+      success: false,
+      message: 'Error tracking email click'
+    });
   }
 };
 
-// @desc    Update reminder settings
-// @route   PUT /api/events/:eventId/reminders
-// @access  Private (Organizer only)
 exports.updateReminderSettings = async (req, res) => {
   try {
-    const event = await Event.findById(req.params.eventId);
+    const { eventId } = req.params;
+    const event = await Event.findById(eventId);
+
     if (!event) {
       return res.status(404).json({
         success: false,
@@ -166,63 +202,74 @@ exports.updateReminderSettings = async (req, res) => {
       });
     }
 
-    // Update reminder settings
-    event.reminderSettings = req.body;
-    await event.save();
-
-    // Reschedule reminders based on new settings
-    if (req.body.enabled) {
-      await scheduleEventReminders(event._id);
-    } else {
-      await cancelEventReminders(event._id);
+    // Check if user is event organizer
+    if (event.organizer.toString() !== req.user.id) {
+      return res.status(403).json({
+        success: false,
+        message: 'Not authorized to update reminder settings'
+      });
     }
+
+    event.reminderSettings = {
+      ...event.reminderSettings,
+      ...req.body
+    };
+
+    await event.save();
 
     res.json({
       success: true,
       data: event.reminderSettings
     });
   } catch (error) {
+    console.error('Error updating reminder settings:', error);
     res.status(500).json({
       success: false,
-      message: error.message
+      message: 'Error updating reminder settings'
     });
   }
 };
 
-// @desc    Schedule email blast
-// @route   POST /api/events/:eventId/email-blasts
-// @access  Private (Organizer only)
 exports.scheduleEmailBlast = async (req, res) => {
   try {
+    const { eventId } = req.params;
+    const event = await Event.findById(eventId);
+
+    if (!event) {
+      return res.status(404).json({
+        success: false,
+        message: 'Event not found'
+      });
+    }
+
+    // Check if user is event organizer
+    if (event.organizer.toString() !== req.user.id) {
+      return res.status(403).json({
+        success: false,
+        message: 'Not authorized to schedule email blasts'
+      });
+    }
+
     const { subject, message, scheduledFor, recipients } = req.body;
-    
+
     const emailBlast = await EmailBlast.create({
-      event: req.params.eventId,
+      event: eventId,
       subject,
       message,
-      scheduledFor: new Date(scheduledFor),
+      scheduledFor,
       recipients,
       status: 'scheduled'
     });
-
-    // Add to email queue
-    await emailQueue.add(
-      'scheduled-blast',
-      { blastId: emailBlast._id },
-      { 
-        delay: new Date(scheduledFor) - new Date(),
-        jobId: emailBlast._id.toString()
-      }
-    );
 
     res.status(201).json({
       success: true,
       data: emailBlast
     });
   } catch (error) {
+    console.error('Error scheduling email blast:', error);
     res.status(500).json({
       success: false,
-      message: error.message
+      message: 'Error scheduling email blast'
     });
   }
-}; 
+};

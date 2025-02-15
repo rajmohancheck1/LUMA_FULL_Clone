@@ -17,7 +17,7 @@ exports.createTemplate = async (req, res) => {
       subject,
       message,
       category: category || 'general',
-      creator: req.user._id,
+      creator: req.user.id,
       variables: extractVariables(message) // Helper function to extract template variables
     });
 
@@ -50,11 +50,12 @@ const extractVariables = (message) => {
 exports.getTemplates = async (req, res) => {
   try {
     const templates = await EmailTemplate.find({
-      creator: req.user._id
+      creator: req.user.id
     }).sort('-createdAt');
 
     res.json({
       success: true,
+      count: templates.length,
       data: templates
     });
   } catch (error) {
@@ -67,14 +68,7 @@ exports.getTemplates = async (req, res) => {
 
 exports.updateTemplate = async (req, res) => {
   try {
-    const template = await EmailTemplate.findOneAndUpdate(
-      {
-        _id: req.params.id,
-        creator: req.user._id
-      },
-      req.body,
-      { new: true }
-    );
+    let template = await EmailTemplate.findById(req.params.id);
 
     if (!template) {
       return res.status(404).json({
@@ -82,6 +76,20 @@ exports.updateTemplate = async (req, res) => {
         message: 'Template not found'
       });
     }
+
+    // Check if user owns this template
+    if (template.creator.toString() !== req.user.id) {
+      return res.status(403).json({
+        success: false,
+        message: 'Not authorized to update this template'
+      });
+    }
+
+    template = await EmailTemplate.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true }
+    );
 
     res.json({
       success: true,
@@ -97,10 +105,7 @@ exports.updateTemplate = async (req, res) => {
 
 exports.deleteTemplate = async (req, res) => {
   try {
-    const template = await EmailTemplate.findOneAndDelete({
-      _id: req.params.id,
-      creator: req.user._id
-    });
+    const template = await EmailTemplate.findById(req.params.id);
 
     if (!template) {
       return res.status(404).json({
@@ -108,6 +113,16 @@ exports.deleteTemplate = async (req, res) => {
         message: 'Template not found'
       });
     }
+
+    // Check if user owns this template
+    if (template.creator.toString() !== req.user.id) {
+      return res.status(403).json({
+        success: false,
+        message: 'Not authorized to delete this template'
+      });
+    }
+
+    await template.remove();
 
     res.json({
       success: true,
@@ -119,4 +134,4 @@ exports.deleteTemplate = async (req, res) => {
       message: 'Error deleting email template'
     });
   }
-}; 
+};

@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const { protect } = require('../middleware/authMiddleware');
+const upload = require('../middleware/uploadMiddleware');
 const {
     createEvent,
     getEvents,
@@ -7,36 +9,30 @@ const {
     updateEvent,
     deleteEvent,
     getMyRSVPs,
+    getMyEvents,
     updateEventReminders,
     updateEventFeedback,
     sendBlast
 } = require('../controllers/eventController');
-const { protect, authorize } = require('../middleware/authMiddleware');
-const upload = require('../middleware/uploadMiddleware');
-const { getEventInsights } = require('../controllers/eventInsightsController');
 
-router.get('/my-rsvps', protect, getMyRSVPs);
+// Create a sub-router for user-specific routes
+const userRouter = express.Router();
+userRouter.get('/my-events', getMyEvents);
+userRouter.get('/my-rsvps', getMyRSVPs);
 
-router
-    .route('/')
-    .get(getEvents)
-    .post(
-        protect, 
-        authorize('organizer', 'admin'), 
-        upload.single('image'), 
-        createEvent
-    );
+// Mount the user router
+router.use('/', protect, userRouter);
 
-router
-    .route('/:id')
-    .get(getEvent)
-    .put(protect, authorize('organizer', 'admin'), updateEvent)
-    .delete(protect, authorize('organizer', 'admin'), deleteEvent);
+// Public routes
+router.get('/', getEvents);
+router.get('/:id', getEvent);
 
-router.get('/:id/insights', protect, authorize('organizer', 'admin'), getEventInsights);
+// Protected routes
+router.post('/', protect, upload.single('image'), createEvent);
+router.put('/:id', protect, upload.single('image'), updateEvent);
+router.delete('/:id', protect, deleteEvent);
+router.put('/:id/reminders', protect, updateEventReminders);
+router.put('/:id/feedback', protect, updateEventFeedback);
+router.post('/:id/blasts', protect, sendBlast);
 
-router.put('/:id/reminders', protect, authorize('organizer', 'admin'), updateEventReminders);
-router.put('/:id/feedback', protect, authorize('organizer', 'admin'), updateEventFeedback);
-router.post('/:id/blasts', protect, authorize('organizer', 'admin'), sendBlast);
-
-module.exports = router; 
+module.exports = router;

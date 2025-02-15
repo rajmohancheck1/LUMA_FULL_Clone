@@ -6,8 +6,7 @@ const Register = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    password: '',
-    role: 'user'
+    password: ''
   });
   const [error, setError] = useState('');
   const { register } = useContext(AuthContext);
@@ -23,7 +22,7 @@ const Register = () => {
   const handleSubmit = async e => {
     e.preventDefault();
     try {
-      await register(formData);
+      await register({ ...formData, role: 'user' }); // Always set role as 'user'
       navigate('/');
     } catch (error) {
       setError(error.response?.data?.message || 'Registration failed');
@@ -89,27 +88,11 @@ const Register = () => {
               />
             </div>
 
-            <div>
-              <label htmlFor="role" className="block text-sm font-medium text-gray-700">
-                Account Type
-              </label>
-              <select
-                id="role"
-                name="role"
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                value={formData.role}
-                onChange={handleChange}
-              >
-                <option value="user">Attendee</option>
-                <option value="organizer">Event Organizer</option>
-              </select>
-            </div>
-
             <button
               type="submit"
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
+              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
-              Register
+              Sign up
             </button>
           </form>
         </div>

@@ -47,6 +47,6 @@ app.use('/api/email-templates', emailTemplateRoutes);
 app.use(errorHandler);
 
 // Add this after other middleware
-app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+app.use('/uploads/events', express.static(path.join(__dirname, 'public/uploads/events')));
 
 module.exports = app; 

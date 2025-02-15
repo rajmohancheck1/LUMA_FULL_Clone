@@ -14,6 +14,7 @@ const EventDetails = () => {
   const [showContactForm, setShowContactForm] = useState(false);
   const [contactMessage, setContactMessage] = useState('');
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [imageUrl, setImageUrl] = useState('/default-event.jpg');
   const { id } = useParams();
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -21,6 +22,14 @@ const EventDetails = () => {
   useEffect(() => {
     fetchEventDetails();
   }, [id]);
+
+  useEffect(() => {
+    if (event?.image) {
+      setImageUrl(`${process.env.REACT_APP_API_URL}/uploads/events/${event.image}?t=${Date.now()}`);
+    } else {
+      setImageUrl('/default-event.jpg');
+    }
+  }, [event?.image]);
 
   const fetchEventDetails = async () => {
     try {
@@ -77,11 +86,16 @@ const EventDetails = () => {
     );
   }
 
-  const imageUrl = event.image 
-    ? `${process.env.REACT_APP_API_URL}/uploads/events/${event.image}`
-    : '/default-event.jpg';
-
   const eventDate = new Date(event.date);
+
+  const handleImageError = (e) => {
+    console.log('Image failed to load:', {
+      imageUrl,
+      eventImage: event.image,
+      apiUrl: process.env.REACT_APP_API_URL
+    });
+    e.target.src = '/default-event.jpg';
+  };
 
   return (
     <div className="min-h-screen bg-[#121212] flex justify-center items-center p-6">
@@ -94,9 +108,7 @@ const EventDetails = () => {
                 src={imageUrl}
                 alt={event.title}
                 className="w-full h-full object-cover mix-blend-overlay"
-                onError={(e) => {
-                  e.target.src = '/default-event.jpg';
-                }}
+                onError={handleImageError}
               />
             </div>
           </div>

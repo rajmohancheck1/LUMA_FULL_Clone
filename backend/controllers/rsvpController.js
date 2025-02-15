@@ -58,9 +58,25 @@ const createRSVP = async (req, res) => {
 
 // @desc    Get all RSVPs for an event
 // @route   GET /api/events/:eventId/rsvp
-// @access  Private (Organizer only)
+// @access  Private
 const getRSVPs = async (req, res) => {
     try {
+        const event = await Event.findById(req.params.eventId);
+        if (!event) {
+            return res.status(404).json({
+                success: false,
+                message: 'Event not found'
+            });
+        }
+
+        // Only allow event organizer to see all RSVPs
+        if (event.organizer.toString() !== req.user.id) {
+            return res.status(403).json({
+                success: false,
+                message: 'Not authorized to view RSVPs for this event'
+            });
+        }
+
         const rsvps = await RSVP.find({ event: req.params.eventId })
             .populate('user', 'name email');
 
@@ -92,17 +108,21 @@ const updateRSVP = async (req, res) => {
         }
 
         // Make sure user owns RSVP
-        if (rsvp.user.toString() !== req.user.id && req.user.role !== 'admin') {
-            return res.status(401).json({
+        if (rsvp.user.toString() !== req.user.id) {
+            return res.status(403).json({
                 success: false,
                 message: 'Not authorized to update this RSVP'
             });
         }
 
-        rsvp = await RSVP.findByIdAndUpdate(req.params.id, req.body, {
-            new: true,
-            runValidators: true
-        });
+        rsvp = await RSVP.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            {
+                new: true,
+                runValidators: true
+            }
+        );
 
         res.json({
             success: true,
@@ -120,4 +140,4 @@ module.exports = {
     createRSVP,
     getRSVPs,
     updateRSVP
-}; 
+};

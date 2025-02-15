@@ -37,11 +37,19 @@ const EventManagement = () => {
 
   const handleUpdateEvent = async (updatedData) => {
     try {
-      const res = await api.put(`/api/events/${id}`, updatedData);
-      setEvent(res.data.data);
-      showNotification('Event updated successfully', 'success');
+      const config = {
+        headers: {
+          'Content-Type': updatedData instanceof FormData ? 'multipart/form-data' : 'application/json'
+        }
+      };
+      
+      const res = await api.put(`/api/events/${id}`, updatedData, config);
+      await fetchEventDetails(); // Fetch fresh data after update
+      return res.data;
     } catch (error) {
-      showNotification('Failed to update event', 'error');
+      console.error('Update error:', error);
+      showNotification(error.response?.data?.message || 'Failed to update event', 'error');
+      throw error;
     }
   };
 
@@ -99,9 +107,9 @@ const EventManagement = () => {
                 className={({ selected }) =>
                   `py-4 px-1 border-b-2 ${
                     selected 
-                      ? 'border-white text-white' 
-                      : 'border-transparent text-gray-400 hover:text-white'
-                  }`
+                      ? 'text-blue-500 border-blue-500'
+                      : 'text-gray-400 border-transparent hover:text-gray-200'
+                  } focus:outline-none`
                 }
               >
                 {tab}
@@ -109,32 +117,21 @@ const EventManagement = () => {
             ))}
           </Tab.List>
 
-          <Tab.Panels className="mt-6">
+          <Tab.Panels className="mt-8">
             <Tab.Panel>
-              <EventOverview 
-                event={event} 
-                onUpdate={handleUpdateEvent} 
-              />
+              <EventOverview event={event} onUpdate={handleUpdateEvent} />
             </Tab.Panel>
             <Tab.Panel>
-              <GuestList 
-                eventId={id} 
-                rsvps={event.rsvps} 
-              />
+              <GuestList event={event} />
             </Tab.Panel>
             <Tab.Panel>
-              <RegistrationSettings 
-                event={event} 
-                onUpdate={handleUpdateEvent} 
-              />
+              <RegistrationSettings event={event} onUpdate={handleUpdateEvent} />
             </Tab.Panel>
             <Tab.Panel>
-              <Blasts eventId={id} />
+              <Blasts event={event} onSendBlast={handleSendBlast} />
             </Tab.Panel>
             <Tab.Panel>
-              <EventInsights 
-                event={event} 
-              />
+              <EventInsights event={event} />
             </Tab.Panel>
           </Tab.Panels>
         </Tab.Group>
@@ -143,4 +140,4 @@ const EventManagement = () => {
   );
 };
 
-export default EventManagement; 
+export default EventManagement;

@@ -5,15 +5,16 @@ const {
     getRSVPs,
     updateRSVP
 } = require('../controllers/rsvpController');
-const { protect, authorize } = require('../middleware/authMiddleware');
+const { protect } = require('../middleware/authMiddleware');
 
-router
-    .route('/')
-    .post(protect, createRSVP)
-    .get(protect, authorize('organizer', 'admin'), getRSVPs);
+// All RSVP routes require authentication
+router.use(protect);
 
-router
-    .route('/:id')
-    .put(protect, updateRSVP);
+router.route('/')
+    .post(createRSVP)
+    .get(getRSVPs);
 
-module.exports = router; 
+router.route('/:id')
+    .put(updateRSVP);
+
+module.exports = router;

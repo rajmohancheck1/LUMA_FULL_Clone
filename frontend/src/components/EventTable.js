@@ -2,21 +2,33 @@ import { format } from 'date-fns';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import { useNotification } from '../context/NotificationContext';
+import { useState } from 'react';
 
 const EventTable = ({ events, onEventDeleted }) => {
   const navigate = useNavigate();
   const { showNotification } = useNotification();
+  const [deletingEventId, setDeletingEventId] = useState(null);
 
   const handleDelete = async eventId => {
-    if (window.confirm('Are you sure you want to delete this event?')) {
-      try {
-        await api.delete(`/api/events/${eventId}`);
-        showNotification('Event deleted successfully', 'success');
-        onEventDeleted();
-      } catch (error) {
-        showNotification('Failed to delete event', 'error');
-        console.error('Failed to delete event:', error);
+    if (!window.confirm('Are you sure you want to delete this event? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      setDeletingEventId(eventId);
+      await api.delete(`/api/events/${eventId}`);
+      showNotification('Event deleted successfully', 'success');
+      if (onEventDeleted) {
+        onEventDeleted(eventId);
       }
+    } catch (error) {
+      const errorMessage = error.response?.data?.message 
+        || error.response?.data?.error 
+        || 'Failed to delete event. Please try again.';
+      showNotification(errorMessage, 'error');
+      console.error('Failed to delete event:', error);
+    } finally {
+      setDeletingEventId(null);
     }
   };
 
@@ -24,7 +36,7 @@ const EventTable = ({ events, onEventDeleted }) => {
     navigate(`/events/${eventId}/manage`);
   };
 
-  if (events.length === 0) {
+  if (!events?.length) {
     return <div className="text-center py-8 text-gray-400">No events found</div>;
   }
  
@@ -97,9 +109,14 @@ const EventTable = ({ events, onEventDeleted }) => {
                 </Link>
                 <button
                   onClick={() => handleDelete(event._id)}
-                  className="text-red-400 hover:text-red-300 transition-colors duration-200"
+                  disabled={deletingEventId === event._id}
+                  className={`${
+                    deletingEventId === event._id
+                      ? 'text-gray-500 cursor-not-allowed'
+                      : 'text-red-400 hover:text-red-300'
+                  } transition-colors duration-200`}
                 >
-                  Delete
+                  {deletingEventId === event._id ? 'Deleting...' : 'Delete'}
                 </button>
               </td>
             </tr>

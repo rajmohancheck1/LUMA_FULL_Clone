@@ -15,27 +15,24 @@ const Dashboard = () => {
   const { user } = useContext(AuthContext);
 
   useEffect(() => {
-    fetchDashboardData();
-  }, [user]);
+    if (user?._id) {
+      fetchDashboardData();
+    }
+  }, [user?._id]);
 
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
       setError('');
       
-      const promises = [
-        user?.role === 'organizer' ? api.get('/api/events?organizer=' + user._id) : null,
+      // Get events created by the logged-in user
+      const [eventsRes, rsvpsRes] = await Promise.all([
+        api.get('/api/events/my-events'),
         api.get('/api/events/my-rsvps')
-      ].filter(Boolean); // Filter out null promises
+      ]);
 
-      const responses = await Promise.all(promises);
-      
-      if (user?.role === 'organizer') {
-        setEvents(responses[0].data.data);
-        setRsvps(responses[1].data.data);
-      } else {
-        setRsvps(responses[0].data.data);
-      }
+      setEvents(eventsRes.data.data);
+      setRsvps(rsvpsRes.data.data);
     } catch (error) {
       console.error('Dashboard error:', error);
       setError(error.response?.data?.message || 'Failed to load dashboard data');
@@ -43,6 +40,14 @@ const Dashboard = () => {
       setLoading(false);
     }
   };
+
+  if (!user) {
+    return (
+      <div className="text-center py-8">
+        Please log in to view your dashboard.
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -56,14 +61,12 @@ const Dashboard = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-        {user?.role === 'organizer' && (
-          <Link
-            to="/create-event"
-            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
-          >
-            Create Event
-          </Link>
-        )}
+        <Link
+          to="/create-event"
+          className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+        >
+          Create Event
+        </Link>
       </div>
 
       {error && (
@@ -74,16 +77,13 @@ const Dashboard = () => {
 
       <DashboardStats events={events} rsvps={rsvps} />
 
-      {user?.role === 'organizer' && (
-        <div className="mt-8">
-          <h2 className="bg-gray-800 p-6 rounded-lg shadow-md">Your Events</h2>
-          <EventTable events={events} onEventDeleted={fetchDashboardData} />
-        </div>
-      )}
-      
+      <div className="mt-8">
+        <h2 className="bg-gray-800 p-6 rounded-lg shadow-md text-white">My Created Events</h2>
+        <EventTable events={events} onEventDeleted={fetchDashboardData} />
+      </div>
 
       <div className="mt-8">
-        <h2 className="bg-gray-800 p-6 rounded-lg shadow-md">Your RSVPs</h2>
+        <h2 className="bg-gray-800 p-6 rounded-lg shadow-md text-white">My RSVPs</h2>
         <RSVPTable rsvps={rsvps} />
       </div>
     </div>

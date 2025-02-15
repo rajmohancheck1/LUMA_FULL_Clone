@@ -18,7 +18,7 @@ const AppRoutes = () => {
       <Navbar />
       <Routes>
         <Route path="/events/:id/manage" element={
-          <PrivateRoute roles={['organizer', 'admin']}>
+          <PrivateRoute>
             <EventManagement />
           </PrivateRoute>
         } />
@@ -36,7 +36,7 @@ const AppRoutes = () => {
         <Route path="/register" element={<Register />} />
         <Route path="/events/:id" element={<EventDetails />} />
         <Route path="/create-event" element={
-          <PrivateRoute roles={['organizer', 'admin']}>
+          <PrivateRoute>
             <CreateEvent />
           </PrivateRoute>
         } />

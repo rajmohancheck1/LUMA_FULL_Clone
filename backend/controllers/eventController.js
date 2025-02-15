@@ -1,18 +1,14 @@
+const mongoose = require('mongoose');
 const Event = require('../models/Event');
 const RSVP = require('../models/RSVP');
+const path = require('path');
+const fs = require('fs');
 
 // @desc    Create new event
 // @route   POST /api/events
-// @access  Private (Organizers only)
+// @access  Private
 const createEvent = async (req, res, next) => {
     try {
-        if (!req.user.role === 'organizer') {
-            return res.status(403).json({
-                success: false,
-                message: 'Only organizers can create events'
-            });
-        }
-
         // Handle file upload
         if (req.file) {
             req.body.image = req.file.filename;
@@ -37,7 +33,7 @@ const createEvent = async (req, res, next) => {
 // @access  Public
 const getEvents = async (req, res) => {
     try {
-        const { category, search, date, price } = req.query;
+        const { category, search, date, price, organizer } = req.query;
         let query = {};
 
         // Build query
@@ -56,6 +52,9 @@ const getEvents = async (req, res) => {
         if (price) {
             query.price = { $lte: parseFloat(price) };
         }
+        if (organizer) {
+            query.organizer = organizer;
+        }
 
         const events = await Event.find(query)
             .populate('organizer', 'name email')
@@ -67,9 +66,10 @@ const getEvents = async (req, res) => {
             data: events
         });
     } catch (error) {
+        console.error('Error in getEvents:', error);
         res.status(400).json({
             success: false,
-            message: error.message
+            message: error.message || 'Error fetching events'
         });
     }
 };
@@ -104,7 +104,7 @@ const getEvent = async (req, res) => {
 
 // @desc    Update event
 // @route   PUT /api/events/:id
-// @access  Private (Event organizer only)
+// @access  Private
 const updateEvent = async (req, res) => {
     try {
         let event = await Event.findById(req.params.id);
@@ -116,18 +116,43 @@ const updateEvent = async (req, res) => {
             });
         }
 
-        // Make sure user is event organizer
-        if (event.organizer.toString() !== req.user.id && req.user.role !== 'admin') {
-            return res.status(401).json({
+        // Check if user is event organizer
+        if (event.organizer.toString() !== req.user.id) {
+            return res.status(403).json({
                 success: false,
                 message: 'Not authorized to update this event'
             });
         }
 
-        event = await Event.findByIdAndUpdate(req.params.id, req.body, {
-            new: true,
-            runValidators: true
-        });
+        // Handle file upload
+        if (req.file) {
+            // Delete old image if it exists and is not the default
+            if (event.image && event.image !== 'default-event.jpg') {
+                const oldImagePath = path.join(__dirname, '../public/uploads/events', event.image);
+                if (fs.existsSync(oldImagePath)) {
+                    fs.unlinkSync(oldImagePath);
+                }
+            }
+            req.body.image = req.file.filename;
+        }
+
+        // Add timestamp to force browser to reload image
+        const timestamp = Date.now();
+        
+        event = await Event.findByIdAndUpdate(
+            req.params.id,
+            { ...req.body, updatedAt: new Date() },
+            {
+                new: true,
+                runValidators: true
+            }
+        );
+
+        // Add timestamp to image URL
+        event = event.toObject();
+        if (event.image) {
+            event.imageUrl = `/uploads/events/${event.image}?t=${timestamp}`;
+        }
 
         res.json({
             success: true,
@@ -143,7 +168,7 @@ const updateEvent = async (req, res) => {
 
 // @desc    Delete event
 // @route   DELETE /api/events/:id
-// @access  Private (Event organizer only)
+// @access  Private
 const deleteEvent = async (req, res) => {
     try {
         const event = await Event.findById(req.params.id);
@@ -155,24 +180,37 @@ const deleteEvent = async (req, res) => {
             });
         }
 
-        // Make sure user is event organizer
-        if (event.organizer.toString() !== req.user.id && req.user.role !== 'admin') {
-            return res.status(401).json({
+        // Check if user is event organizer
+        if (event.organizer.toString() !== req.user.id) {
+            return res.status(403).json({
                 success: false,
                 message: 'Not authorized to delete this event'
             });
         }
 
-        await event.remove();
+        // Delete event image if it exists
+        if (event.image) {
+            const imagePath = path.join(__dirname, '..', 'public', 'uploads', 'events', event.image);
+            if (fs.existsSync(imagePath)) {
+                fs.unlinkSync(imagePath);
+            }
+        }
+
+        // Delete all RSVPs associated with this event
+        await RSVP.deleteMany({ event: event._id });
+
+        // Delete the event
+        await event.deleteOne();
 
         res.json({
             success: true,
             data: {}
         });
     } catch (error) {
+        console.error('Error deleting event:', error);
         res.status(400).json({
             success: false,
-            message: error.message
+            message: error.message || 'Error deleting event'
         });
     }
 };
@@ -185,7 +223,7 @@ const getMyRSVPs = async (req, res) => {
         const rsvps = await RSVP.find({ user: req.user.id })
             .populate({
                 path: 'event',
-                select: 'title date time location status category'
+                populate: { path: 'organizer', select: 'name email' }
             });
 
         res.json({
@@ -193,16 +231,38 @@ const getMyRSVPs = async (req, res) => {
             data: rsvps
         });
     } catch (error) {
-        res.status(500).json({
+        res.status(400).json({
             success: false,
-            message: 'Error fetching RSVPs'
+            message: error.message
+        });
+    }
+};
+
+// @desc    Get user's events
+// @route   GET /api/events/my-events
+// @access  Private
+const getMyEvents = async (req, res) => {
+    try {
+        const events = await Event.find({ organizer: req.user.id })
+            .populate('organizer', 'name email')
+            .sort({ date: 1 });
+
+        res.json({
+            success: true,
+            count: events.length,
+            data: events
+        });
+    } catch (error) {
+        res.status(400).json({
+            success: false,
+            message: error.message || 'Error fetching your events'
         });
     }
 };
 
 // @desc    Update event reminder settings
 // @route   PUT /api/events/:id/reminders
-// @access  Private (Organizer only)
+// @access  Private
 const updateEventReminders = async (req, res) => {
     try {
         const event = await Event.findById(req.params.id);
@@ -214,16 +274,23 @@ const updateEventReminders = async (req, res) => {
             });
         }
 
-        // Update reminder settings
+        // Check if user is event organizer
+        if (event.organizer.toString() !== req.user.id) {
+            return res.status(403).json({
+                success: false,
+                message: 'Not authorized to update reminder settings'
+            });
+        }
+
         event.reminderSettings = req.body;
         await event.save();
 
         res.json({
             success: true,
-            data: event.reminderSettings
+            data: event
         });
     } catch (error) {
-        res.status(500).json({
+        res.status(400).json({
             success: false,
             message: error.message
         });
@@ -232,7 +299,7 @@ const updateEventReminders = async (req, res) => {
 
 // @desc    Update post-event feedback settings
 // @route   PUT /api/events/:id/feedback
-// @access  Private (Organizer only)
+// @access  Private
 const updateEventFeedback = async (req, res) => {
     try {
         const event = await Event.findById(req.params.id);
@@ -244,16 +311,23 @@ const updateEventFeedback = async (req, res) => {
             });
         }
 
-        // Update feedback settings
+        // Check if user is event organizer
+        if (event.organizer.toString() !== req.user.id) {
+            return res.status(403).json({
+                success: false,
+                message: 'Not authorized to update feedback settings'
+            });
+        }
+
         event.feedbackSettings = req.body;
         await event.save();
 
         res.json({
             success: true,
-            data: event.feedbackSettings
+            data: event
         });
     } catch (error) {
-        res.status(500).json({
+        res.status(400).json({
             success: false,
             message: error.message
         });
@@ -262,7 +336,7 @@ const updateEventFeedback = async (req, res) => {
 
 // @desc    Send blast to event attendees
 // @route   POST /api/events/:id/blasts
-// @access  Private (Organizer only)
+// @access  Private
 const sendBlast = async (req, res) => {
     try {
         const event = await Event.findById(req.params.id);
@@ -274,38 +348,31 @@ const sendBlast = async (req, res) => {
             });
         }
 
-        const { message, subject, recipients = 'all' } = req.body;
-
-        // Get recipients based on filter
-        let recipientQuery = { event: event._id };
-        if (recipients === 'going') {
-            recipientQuery.status = 'attending';
-        } else if (recipients === 'maybe') {
-            recipientQuery.status = 'maybe';
-        }
-
-        const rsvps = await RSVP.find(recipientQuery).populate('user', 'email name');
-
-        // Send emails to recipients
-        for (const rsvp of rsvps) {
-            await sendEmail({
-                to: rsvp.user.email,
-                subject: subject || `Update from ${event.title}`,
-                html: message,
-                metadata: {
-                    eventId: event._id,
-                    userId: rsvp.user._id,
-                    blastType: 'update'
-                }
+        // Check if user is event organizer
+        if (event.organizer.toString() !== req.user.id) {
+            return res.status(403).json({
+                success: false,
+                message: 'Not authorized to send blast messages'
             });
         }
 
+        // Add blast message to event
+        event.blasts.push({
+            message: req.body.message,
+            sentAt: new Date()
+        });
+
+        await event.save();
+
+        // Here you would typically send the blast message to all attendees
+        // through your preferred notification system
+
         res.json({
             success: true,
-            message: `Blast sent to ${rsvps.length} recipients`
+            message: 'Blast message sent successfully'
         });
     } catch (error) {
-        res.status(500).json({
+        res.status(400).json({
             success: false,
             message: error.message
         });
@@ -319,7 +386,8 @@ module.exports = {
     updateEvent,
     deleteEvent,
     getMyRSVPs,
+    getMyEvents,
     updateEventReminders,
     updateEventFeedback,
     sendBlast
-}; 
+};

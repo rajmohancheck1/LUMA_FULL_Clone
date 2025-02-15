@@ -23,15 +23,15 @@ const Navbar = () => {
               <Link to="/events" className="hover:text-blue-200 transition-colors font-medium">
                 Events
               </Link>
-              {user?.role === 'organizer' && (
-                <Link to="/dashboard" className="hover:text-blue-200 transition-colors font-medium">
-                  Dashboard
-                </Link>
-              )}
-               {user?.role === 'organizer' && (
-                <Link to="/calender" className="hover:text-blue-200 transition-colors font-medium">
-                  Calender
-                </Link>
+              {user && (
+                <>
+                  <Link to="/dashboard" className="hover:text-blue-200 transition-colors font-medium">
+                    Dashboard
+                  </Link>
+                  <Link to="/calender" className="hover:text-blue-200 transition-colors font-medium">
+                    Calendar
+                  </Link>
+                </>
               )}
             </div>
           </div>
