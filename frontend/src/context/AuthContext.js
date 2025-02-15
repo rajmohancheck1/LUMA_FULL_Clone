@@ -12,16 +12,13 @@ export const AuthProvider = ({ children }) => {
 
   const checkUser = useCallback(async () => {
     try {
-      const token = localStorage.getItem('token');
-      if (token) {
-        api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-        const res = await api.get('/api/auth/me');
-        setUser(res.data.data);
-      }
+      const res = await api.get('/api/auth/me');
+      setUser(res.data.data);
     } catch (error) {
-      localStorage.removeItem('token');
-      delete api.defaults.headers.common['Authorization'];
-      setError(error.response?.data?.message || 'Authentication failed');
+      // Don't set error for authentication failures
+      if (error.response?.status !== 401) {
+        setError(error.response?.data?.message || 'Authentication failed');
+      }
     } finally {
       setLoading(false);
     }
@@ -32,10 +29,13 @@ export const AuthProvider = ({ children }) => {
       try {
         await checkUser();
       } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error('Auth initialization failed:', error);
+        // Only log non-auth errors
+        if (error.response?.status !== 401) {
+          console.error('Auth initialization failed:', error);
+        }
       } finally {
         setIsInitialized(true);
+        setLoading(false);
       }
     };
     initializeAuth();
@@ -45,13 +45,9 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       const res = await api.post('/api/auth/login', credentials);
-      const { token, ...userData } = res.data.data;
-      localStorage.setItem('token', token);
-      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      setUser(userData);
-      return res.data;
+      setUser(res.data.data);
+      return res.data.data;
     } catch (error) {
-      setError(error.response?.data?.message || 'Login failed');
       throw error;
     } finally {
       setLoading(false);
@@ -60,38 +56,49 @@ export const AuthProvider = ({ children }) => {
 
   const register = async userData => {
     try {
+      setLoading(true);
       const res = await api.post('/api/auth/register', userData);
-      localStorage.setItem('token', res.data.data.token);
-      api.defaults.headers.common['Authorization'] = `Bearer ${res.data.data.token}`;
       setUser(res.data.data);
-      return res.data;
+      return res.data.data;
     } catch (error) {
-      setError(error.response?.data?.message || 'Registration failed');
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem('token');
-    delete api.defaults.headers.common['Authorization'];
-    setUser(null);
-    window.location.href = '/login';
-  };
-
-  const value = {
-    user,
-    loading,
-    error,
-    isInitialized,
-    login,
-    register,
-    logout,
-    checkUser
+  const logout = async () => {
+    try {
+      setLoading(true);
+      await api.post('/api/auth/logout');
+      setUser(null);
+      window.location.href = '/login';
+    } catch (error) {
+      console.error('Logout failed:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (!isInitialized) {
-    return <Loading size="large" />;
+    return <Loading />;
   }
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        error,
+        login,
+        register,
+        logout,
+        checkUser
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 };
+
+export default AuthContext;

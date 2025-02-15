@@ -5,10 +5,17 @@ const protect = async (req, res, next) => {
     try {
         let token;
 
-        if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-            // Get token from header
-            token = req.headers.authorization.split(' ')[1];
+        // Get token from cookie
+        token = req.cookies.token;
 
+        if (!token) {
+            return res.status(401).json({
+                success: false,
+                message: 'Not authorized to access this route'
+            });
+        }
+
+        try {
             // Verify token
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
@@ -23,17 +30,17 @@ const protect = async (req, res, next) => {
             }
 
             next();
-        } else {
-            res.status(401).json({
+        } catch (error) {
+            return res.status(401).json({
                 success: false,
-                message: 'Not authorized, no token'
+                message: 'Not authorized to access this route'
             });
         }
     } catch (error) {
         console.error('Auth error:', error);
-        res.status(401).json({
+        res.status(500).json({
             success: false,
-            message: 'Not authorized, token failed'
+            message: 'Server Error'
         });
     }
 };

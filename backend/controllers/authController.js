@@ -1,5 +1,22 @@
 const User = require('../models/User');
-const { generateToken } = require('../config/jwt');
+const jwt = require('jsonwebtoken');
+
+// Helper function to create token and set cookie
+const createTokenAndSetCookie = (user, res) => {
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+        expiresIn: process.env.JWT_EXPIRE
+    });
+
+    // Set JWT as HTTP-Only cookie
+    res.cookie('token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
+    });
+
+    return token;
+};
 
 // @desc    Register user
 // @route   POST /api/auth/register
@@ -26,14 +43,16 @@ const register = async (req, res) => {
         });
 
         if (user) {
+            // Create token and set cookie
+            const token = createTokenAndSetCookie(user, res);
+
             res.status(201).json({
                 success: true,
                 data: {
                     _id: user._id,
                     name: user.name,
                     email: user.email,
-                    role: user.role,
-                    token: generateToken(user._id)
+                    role: user.role
                 }
             });
         }
@@ -52,7 +71,7 @@ const login = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        // Check for user email
+        // Check if user exists
         const user = await User.findOne({ email }).select('+password');
         if (!user) {
             return res.status(401).json({
@@ -61,7 +80,7 @@ const login = async (req, res) => {
             });
         }
 
-        // Check password
+        // Check if password matches
         const isMatch = await user.matchPassword(password);
         if (!isMatch) {
             return res.status(401).json({
@@ -70,14 +89,16 @@ const login = async (req, res) => {
             });
         }
 
+        // Create token and set cookie
+        const token = createTokenAndSetCookie(user, res);
+
         res.json({
             success: true,
             data: {
                 _id: user._id,
                 name: user.name,
                 email: user.email,
-                role: user.role,
-                token: generateToken(user._id)
+                role: user.role
             }
         });
     } catch (error) {
@@ -106,8 +127,24 @@ const getMe = async (req, res) => {
     }
 };
 
+// @desc    Logout user
+// @route   POST /api/auth/logout
+// @access  Private
+const logout = (req, res) => {
+    res.cookie('token', 'none', {
+        expires: new Date(Date.now() + 10 * 1000),
+        httpOnly: true
+    });
+
+    res.status(200).json({
+        success: true,
+        message: 'User logged out successfully'
+    });
+};
+
 module.exports = {
     register,
     login,
-    getMe
+    getMe,
+    logout
 };

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { protect } = require('../middleware/authMiddleware');
+const checkEventOwnership = require('../middleware/checkEventOwnership');
 const upload = require('../middleware/uploadMiddleware');
 const {
     createEvent,
@@ -30,11 +31,12 @@ router.get('/:id', getEvent);
 
 // Protected routes
 router.post('/', protect, upload.single('image'), createEvent);
-router.put('/:id', protect, upload.single('image'), updateEvent);
-router.delete('/:id', protect, deleteEvent);
-router.put('/:id/reminders', protect, updateEventReminders);
-router.put('/:id/feedback', protect, updateEventFeedback);
-router.post('/:id/blasts', protect, sendBlast);
-router.get('/:id/insights', protect, getEventInsights);
+// Add ownership check for update and delete operations
+router.put('/:id', protect, checkEventOwnership, upload.single('image'), updateEvent);
+router.delete('/:id', protect, checkEventOwnership, deleteEvent);
+router.put('/:id/reminders', protect, checkEventOwnership, updateEventReminders);
+router.put('/:id/feedback', protect, checkEventOwnership, updateEventFeedback);
+router.post('/:id/blasts', protect, checkEventOwnership, sendBlast);
+router.get('/:id/insights', protect, checkEventOwnership, getEventInsights);
 
 module.exports = router;
