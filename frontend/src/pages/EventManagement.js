@@ -119,6 +119,12 @@ const EventManagement = () => {
             }>
               Settings
             </Tab>
+            <Tab className={({ selected }) =>
+              `w-full py-2.5 text-sm font-medium leading-5 text-white rounded-lg
+              ${selected ? 'bg-blue-600' : 'text-gray-400 hover:bg-gray-700 hover:text-white'}`
+            }>
+              Insights
+            </Tab>
           </Tab.List>
 
           <Tab.Panels className="mt-6">
@@ -133,6 +139,9 @@ const EventManagement = () => {
             </Tab.Panel>
             <Tab.Panel>
               <RegistrationSettings event={event} onUpdate={handleUpdateEvent} />
+            </Tab.Panel>
+            <Tab.Panel>
+              <EventInsights event={event} />
             </Tab.Panel>
           </Tab.Panels>
         </Tab.Group>
