@@ -86,12 +86,6 @@ const EventManagement = () => {
               >
                 Preview Event
               </Link>
-              <button
-                onClick={() => {/* handle logout */}}
-                className="text-red-500 hover:text-red-400"
-              >
-                Logout
-              </button>
             </div>
           </div>
         </div>
@@ -100,38 +94,45 @@ const EventManagement = () => {
       {/* Main Content */}
       <div className="max-w-[2000px] mx-auto px-4 pb-8">
         <Tab.Group>
-          <Tab.List className="flex space-x-8 border-b border-gray-700">
-            {['Overview', 'Guests', 'Registration', 'Blasts', 'Insights'].map((tab) => (
-              <Tab
-                key={tab}
-                className={({ selected }) =>
-                  `py-4 px-1 border-b-2 ${
-                    selected 
-                      ? 'text-blue-500 border-blue-500'
-                      : 'text-gray-400 border-transparent hover:text-gray-200'
-                  } focus:outline-none`
-                }
-              >
-                {tab}
-              </Tab>
-            ))}
+          <Tab.List className="flex space-x-1 bg-gray-800 p-1 mt-6 rounded-lg">
+            <Tab className={({ selected }) =>
+              `w-full py-2.5 text-sm font-medium leading-5 text-white rounded-lg
+              ${selected ? 'bg-blue-600' : 'text-gray-400 hover:bg-gray-700 hover:text-white'}`
+            }>
+              Overview
+            </Tab>
+            <Tab className={({ selected }) =>
+              `w-full py-2.5 text-sm font-medium leading-5 text-white rounded-lg
+              ${selected ? 'bg-blue-600' : 'text-gray-400 hover:bg-gray-700 hover:text-white'}`
+            }>
+              Guests
+            </Tab>
+            <Tab className={({ selected }) =>
+              `w-full py-2.5 text-sm font-medium leading-5 text-white rounded-lg
+              ${selected ? 'bg-blue-600' : 'text-gray-400 hover:bg-gray-700 hover:text-white'}`
+            }>
+              Email Blasts
+            </Tab>
+            <Tab className={({ selected }) =>
+              `w-full py-2.5 text-sm font-medium leading-5 text-white rounded-lg
+              ${selected ? 'bg-blue-600' : 'text-gray-400 hover:bg-gray-700 hover:text-white'}`
+            }>
+              Settings
+            </Tab>
           </Tab.List>
 
-          <Tab.Panels className="mt-8">
+          <Tab.Panels className="mt-6">
             <Tab.Panel>
               <EventOverview event={event} onUpdate={handleUpdateEvent} />
             </Tab.Panel>
             <Tab.Panel>
-              <GuestList event={event} />
+              <GuestList eventId={id} />
+            </Tab.Panel>
+            <Tab.Panel>
+              <Blasts eventId={id} />
             </Tab.Panel>
             <Tab.Panel>
               <RegistrationSettings event={event} onUpdate={handleUpdateEvent} />
-            </Tab.Panel>
-            <Tab.Panel>
-              <Blasts event={event} onSendBlast={handleSendBlast} />
-            </Tab.Panel>
-            <Tab.Panel>
-              <EventInsights event={event} />
             </Tab.Panel>
           </Tab.Panels>
         </Tab.Group>

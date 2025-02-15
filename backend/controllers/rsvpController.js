@@ -69,21 +69,26 @@ const getRSVPs = async (req, res) => {
             });
         }
 
-        // Only allow event organizer to see all RSVPs
-        if (event.organizer.toString() !== req.user.id) {
-            return res.status(403).json({
-                success: false,
-                message: 'Not authorized to view RSVPs for this event'
-            });
-        }
-
+        // Get all RSVPs for the event
         const rsvps = await RSVP.find({ event: req.params.eventId })
             .populate('user', 'name email');
 
+        // If user is the organizer, return all RSVPs
+        if (event.organizer.toString() === req.user.id) {
+            return res.json({
+                success: true,
+                count: rsvps.length,
+                data: rsvps
+            });
+        }
+
+        // For non-organizers, only return their own RSVP
+        const userRSVP = rsvps.filter(rsvp => rsvp.user._id.toString() === req.user.id);
+        
         res.json({
             success: true,
-            count: rsvps.length,
-            data: rsvps
+            count: userRSVP.length,
+            data: userRSVP
         });
     } catch (error) {
         res.status(400).json({
@@ -107,7 +112,7 @@ const updateRSVP = async (req, res) => {
             });
         }
 
-        // Make sure user owns RSVP
+        // Only allow RSVP owner to update
         if (rsvp.user.toString() !== req.user.id) {
             return res.status(403).json({
                 success: false,

@@ -38,8 +38,15 @@ const EventDetails = () => {
       setEvent(res.data.data);
 
       if (user) {
-        const rsvpRes = await api.get(`/api/events/${id}/rsvp`);
-        setRsvpStatus(rsvpRes.data.data.find(rsvp => rsvp.user === user._id));
+        try {
+          const rsvpRes = await api.get(`/api/events/${id}/rsvp`);
+          if (rsvpRes.data.data.length > 0) {
+            setRsvpStatus(rsvpRes.data.data[0]);
+          }
+        } catch (rsvpError) {
+          console.log('Error fetching RSVP status:', rsvpError);
+          // Don't set error state here as the event details are still loaded
+        }
       }
     } catch (error) {
       setError('Failed to load event details');
@@ -99,126 +106,52 @@ const EventDetails = () => {
 
   return (
     <div className="min-h-screen bg-[#121212] flex justify-center items-center p-6">
-      <div className="max-w-5xl w-full bg-[#1f1f1f] rounded-lg shadow-lg">
-        <div className="flex gap-6 p-6">
-          {/* Event Image */}
-          <div className="w-1/3">
-            <div className="h-64 rounded-lg bg-gradient-to-br from-blue-500 via-purple-500 to-red-500 overflow-hidden">
-              <img
-                src={imageUrl}
-                alt={event.title}
-                className="w-full h-full object-cover mix-blend-overlay"
-                onError={handleImageError}
-              />
+      <div className="bg-[#1E1E1E] rounded-xl shadow-lg overflow-hidden max-w-4xl w-full">
+        <div className="relative h-64 overflow-hidden">
+          <img
+            src={imageUrl}
+            alt={event.title}
+            className="w-full h-full object-cover"
+            onError={handleImageError}
+          />
+        </div>
+        <div className="p-8">
+          <h1 className="text-3xl font-bold text-white mb-4">{event.title}</h1>
+          <div className="flex items-center text-gray-400 mb-4">
+            <MapPin className="w-5 h-5 mr-2" />
+            <span>{event.location}</span>
+          </div>
+          <div className="flex items-center text-gray-400 mb-6">
+            <User className="w-5 h-5 mr-2" />
+            <span>Hosted by {event.organizer?.name || 'Unknown'}</span>
+          </div>
+          <div className="bg-[#2A2A2A] rounded-lg p-6 mb-6">
+            <h2 className="text-xl font-semibold text-white mb-4">Event Details</h2>
+            <p className="text-gray-300 mb-4">{event.description}</p>
+            <div className="text-gray-400">
+              <p>Date: {format(eventDate, 'MMMM d, yyyy')}</p>
+              <p>Time: {format(eventDate, 'h:mm a')}</p>
             </div>
           </div>
-
-          {/* Event Details */}
-          <div className="flex-1 space-y-4">
-            <h1 className="text-3xl font-bold text-white">{event.title}</h1>
-
-            <div className="flex items-start space-x-4">
-              <div className="bg-neutral-700 rounded-lg p-2 text-center">
-                <span className="text-xs text-neutral-400 uppercase">
-                  {format(eventDate, 'MMM')}
-                </span>
-                <div className="text-xl font-bold text-white">
-                  {format(eventDate, 'd')}
-                </div>
-              </div>
-              <div>
-                <div className="font-medium text-white">
-                  {format(eventDate, 'EEEE, MMMM d')}
-                </div>
-                <div className="text-neutral-400">{event.time}</div>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-2 text-neutral-400">
-              <MapPin className="w-5 h-5" />
-              <span>{event.location}</span>
-            </div>
-
-            <div className="p-4 bg-[#2a2a2a] rounded-lg flex items-center space-x-3">
-              <div className="w-8 h-8 rounded-full bg-pink-600 flex items-center justify-center">
-                <User className="w-4 h-4 text-white" />
-              </div>
-              <div>
-                <div className="font-medium text-white">{event.organizer.name}</div>
-                <div className="text-sm text-neutral-400">{event.organizer.email}</div>
-              </div>
-            </div>
-
-            <div className="p-4 bg-[#2a2a2a] rounded-lg">
-              <p className="text-neutral-300">{event.description}</p>
-            </div>
-
+          <div className="flex justify-between items-center">
             {!rsvpStatus ? (
               <Button
                 onClick={handleRSVP}
-                className="w-full bg-[#916c1b] hover:bg-[#7d5d17] text-white py-3 rounded-lg"
+                className="w-full"
               >
                 Register for Event
               </Button>
             ) : (
-              <div className="p-4 bg-teal-600/20 border border-teal-500/40 text-teal-200 rounded-lg">
-                <p>You have successfully registered!</p>
+              <div className="w-full text-center bg-green-900/20 text-green-400 py-3 px-6 rounded-lg">
+                You are registered for this event!
               </div>
             )}
-
-            <div className="p-4 bg-yellow-800/20 rounded-lg">
-              <p className="text-yellow-100 font-medium">
-                {event.rsvps?.length || 0} People are Going to this Event!
-              </p>
-            </div>
-
-            <Button
-              onClick={() => setShowContactForm(true)}
-              className="w-full bg-[#2b2b2b] hover:bg-[#3a3a3a] text-neutral-400 py-3 rounded-lg"
-            >
-              Contact the Host
-            </Button>
           </div>
         </div>
       </div>
-
-      {/* Success Popup */}
       {showSuccessPopup && (
-        <div className="fixed bottom-10 left-1/2 transform -translate-x-1/2 bg-green-600 text-white py-2 px-4 rounded-lg shadow-lg">
-          Successfully Registered!
-        </div>
-      )}
-
-      {/* Contact Host Form */}
-      {showContactForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center p-6">
-          <div className="bg-[#2a2a2a] p-6 rounded-lg shadow-lg w-96">
-            <h3 className="text-lg font-medium mb-4 text-white">Contact the Host</h3>
-            <textarea
-              value={contactMessage}
-              onChange={(e) => setContactMessage(e.target.value)}
-              className="w-full p-3 border border-neutral-600 rounded-lg mb-4 bg-[#121212] text-white"
-              rows="4"
-              placeholder="Write your message here..."
-            ></textarea>
-            <div className="flex justify-between">
-              <Button
-                onClick={() => setShowContactForm(false)}
-                className="bg-red-600 text-white hover:bg-red-700"
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={() => {
-                  // Handle send message logic here
-                  setShowContactForm(false);
-                }}
-                className="bg-blue-600 text-white hover:bg-blue-700"
-              >
-                Send Message
-              </Button>
-            </div>
-          </div>
+        <div className="fixed bottom-4 right-4 bg-green-900/90 text-green-100 px-6 py-3 rounded-lg shadow-lg">
+          Successfully registered for the event!
         </div>
       )}
     </div>
