@@ -5,15 +5,15 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json'
   },
-  withCredentials: true, // Important for sending cookies
-  timeout: 10000
+  timeout: 10000,
+  withCredentials: true // Enable sending cookies with requests
 });
 
 // Response interceptor
 api.interceptors.response.use(
   response => response,
   error => {
-    // Only redirect to login if we're not already on the login page
+    // Only redirect to login if not already on login page and it's an auth error
     if (error.response?.status === 401 && !window.location.pathname.includes('/login')) {
       window.location.href = '/login';
     }

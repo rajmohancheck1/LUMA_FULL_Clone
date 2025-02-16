@@ -11,11 +11,6 @@ const checkEventOwnership = async (req, res, next) => {
             });
         }
 
-        console.log('Debug - Event Ownership Check:');
-        console.log('User ID:', req.user.id);
-        console.log('Event Organizer:', event.organizer.toString());
-        console.log('Match:', event.organizer.toString() === req.user.id);
-
         // Check if the logged-in user is the organizer of the event
         if (event.organizer.toString() !== req.user.id) {
             return res.status(403).json({
@@ -28,7 +23,6 @@ const checkEventOwnership = async (req, res, next) => {
         req.event = event;
         next();
     } catch (error) {
-        console.error('Event Ownership Check Error:', error);
         return res.status(500).json({
             success: false,
             message: 'Server Error',

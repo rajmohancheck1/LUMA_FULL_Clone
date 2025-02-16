@@ -15,10 +15,11 @@ export const AuthProvider = ({ children }) => {
       const res = await api.get('/api/auth/me');
       setUser(res.data.data);
     } catch (error) {
-      // Don't set error for authentication failures
+      // Don't set error if it's just an auth error
       if (error.response?.status !== 401) {
         setError(error.response?.data?.message || 'Authentication failed');
       }
+      setUser(null);
     } finally {
       setLoading(false);
     }
@@ -29,13 +30,9 @@ export const AuthProvider = ({ children }) => {
       try {
         await checkUser();
       } catch (error) {
-        // Only log non-auth errors
-        if (error.response?.status !== 401) {
-          console.error('Auth initialization failed:', error);
-        }
+        console.error('Auth initialization failed:', error);
       } finally {
         setIsInitialized(true);
-        setLoading(false);
       }
     };
     initializeAuth();
@@ -46,8 +43,9 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       const res = await api.post('/api/auth/login', credentials);
       setUser(res.data.data);
-      return res.data.data;
+      return res.data;
     } catch (error) {
+      setError(error.response?.data?.message || 'Login failed');
       throw error;
     } finally {
       setLoading(false);
@@ -59,8 +57,9 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       const res = await api.post('/api/auth/register', userData);
       setUser(res.data.data);
-      return res.data.data;
+      return res.data;
     } catch (error) {
+      setError(error.response?.data?.message || 'Registration failed');
       throw error;
     } finally {
       setLoading(false);
@@ -69,36 +68,30 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      setLoading(true);
-      await api.post('/api/auth/logout');
+      await api.get('/api/auth/logout');
       setUser(null);
-      window.location.href = '/login';
     } catch (error) {
       console.error('Logout failed:', error);
     } finally {
-      setLoading(false);
+      // Always redirect to login page after logout attempt
+      window.location.href = '/login';
     }
   };
 
+  const value = {
+    user,
+    loading,
+    error,
+    isInitialized,
+    login,
+    register,
+    logout,
+    checkUser
+  };
+
   if (!isInitialized) {
-    return <Loading />;
+    return <Loading size="large" />;
   }
 
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-        loading,
-        error,
-        login,
-        register,
-        logout,
-        checkUser
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
-
-export default AuthContext;

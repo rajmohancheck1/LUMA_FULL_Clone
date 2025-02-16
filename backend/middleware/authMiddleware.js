@@ -11,7 +11,7 @@ const protect = async (req, res, next) => {
         if (!token) {
             return res.status(401).json({
                 success: false,
-                message: 'Not authorized to access this route'
+                message: 'Not authorized, no token'
             });
         }
 
@@ -31,16 +31,17 @@ const protect = async (req, res, next) => {
 
             next();
         } catch (error) {
-            return res.status(401).json({
+            console.error('Token verification error:', error);
+            res.status(401).json({
                 success: false,
-                message: 'Not authorized to access this route'
+                message: 'Not authorized, token failed'
             });
         }
     } catch (error) {
         console.error('Auth error:', error);
-        res.status(500).json({
+        res.status(401).json({
             success: false,
-            message: 'Server Error'
+            message: 'Not authorized'
         });
     }
 };

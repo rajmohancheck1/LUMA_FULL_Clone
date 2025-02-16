@@ -2,10 +2,10 @@ require('dotenv').config({ path: '../.env' });
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
-const cookieParser = require('cookie-parser');
 const connectDB = require('./config/db');
 const errorHandler = require('./middleware/errorHandler');
 const path = require('path');
+const cookieParser = require('cookie-parser');
 
 // Connect to database
 connectDB();
@@ -22,14 +22,14 @@ const app = express();
 
 // Body parser
 app.use(express.json());
-
-// Cookie parser
 app.use(cookieParser());
 
 // Enable CORS
 app.use(cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
-    credentials: true
+  origin: process.env.NODE_ENV === 'production' 
+    ? process.env.FRONTEND_URL 
+    : 'http://localhost:3000',
+  credentials: true
 }));
 
 // Dev logging middleware
@@ -46,10 +46,10 @@ app.use('/api/payments', paymentRoutes);
 app.use('/api/events/:eventId/email-blasts', emailBlastRoutes);
 app.use('/api/email-templates', emailTemplateRoutes);
 
-// Serve uploaded files
-app.use('/uploads/events', express.static(path.join(__dirname, 'public/uploads/events')));
-
 // Error handler
 app.use(errorHandler);
+
+// Add this after other middleware
+app.use('/uploads/events', express.static(path.join(__dirname, 'public/uploads/events')));
 
 module.exports = app; 
