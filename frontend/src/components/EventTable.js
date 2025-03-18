@@ -118,6 +118,12 @@ const EventTable = ({ events, onEventDeleted }) => {
                 >
                   {deletingEventId === event._id ? 'Deleting...' : 'Delete'}
                 </button>
+                <button
+                    onClick={() => navigate(`/create-stream/${event._id}`)}
+                    className="icon-btn"
+                  >
+                    Start Stream
+                  </button>
               </td>
             </tr>
           ))}

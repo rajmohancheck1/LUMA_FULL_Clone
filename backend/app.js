@@ -17,6 +17,9 @@ const rsvpRoutes = require('./routes/rsvpRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const emailBlastRoutes = require('./routes/emailBlastRoutes');
 const emailTemplateRoutes = require('./routes/emailTemplateRoutes');
+const streamRoutes = require('./routes/streamRoutes');
+
+
 
 const app = express();
 
@@ -45,6 +48,9 @@ app.use('/api/events/:eventId/rsvp', rsvpRouter);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/events/:eventId/email-blasts', emailBlastRoutes);
 app.use('/api/email-templates', emailTemplateRoutes);
+
+
+app.use('/api/streams', streamRoutes);
 
 // Error handler
 app.use(errorHandler);

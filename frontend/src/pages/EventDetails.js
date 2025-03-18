@@ -142,9 +142,16 @@ const EventDetails = () => {
                 Register for Event
               </Button>
             ) : (
+              <>
               <div className="w-full text-center bg-green-900/20 text-green-400 py-3 px-6 rounded-lg">
                 You are registered for this event!
               </div>
+              <button
+              onClick={() => navigate(`/view-stream/${event._id}`)}
+              className="view-stream-btn w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition">
+              View Stream
+            </button>
+            </>
             )}
           </div>
         </div>
@@ -153,6 +160,7 @@ const EventDetails = () => {
         <div className="fixed bottom-4 right-4 bg-green-900/90 text-green-100 px-6 py-3 rounded-lg shadow-lg">
           Successfully registered for the event!
         </div>
+        
       )}
     </div>
   );

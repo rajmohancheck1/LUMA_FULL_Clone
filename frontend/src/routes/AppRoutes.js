@@ -11,6 +11,8 @@ import EventManagement from '../pages/EventManagement';
 import BrowseEvents from '../components/BrowseEvent/BrowseEvents';
 import CreateEvent from '../components/CreateEvent/CreateEvent';
 import CalendarView from '../components/Calender/CalendarPage';
+import CreateStreamPage from '../components/Streams/CreateStreamPage';
+import ViewStreamPage from '../components/Streams/ViewStreamPage';
 
 const AppRoutes = () => {
   return (
@@ -32,6 +34,18 @@ const AppRoutes = () => {
             <Home />
           </div>
         } />
+        
+        {/* Create Stream Page */}
+        <Route path="/create-stream/:eventId" element={ 
+        <PrivateRoute>
+        <CreateStreamPage />
+        </PrivateRoute>} />
+
+        {/* View Stream Page */}
+        <Route path="/view-stream/:eventId" element={<ViewStreamPage />} />
+
+            
+
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/events/:id" element={<EventDetails />} />
