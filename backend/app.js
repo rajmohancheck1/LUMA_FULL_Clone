@@ -27,13 +27,15 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
-// // Enable CORS
-// app.use(cors({
-//   origin: process.env.NODE_ENV === 'production' 
-//     ? process.env.FRONTEND_URL 
-//     : 'http://localhost:3000',
-//   credentials: true
-// }));
+// Enable CORS
+app.use(cors({
+  origin: process.env.NODE_ENV === 'production' 
+    ? [process.env.FRONTEND_URL, 'https://luwitch.onrender.com'] 
+    : 'http://localhost:3000',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 // Dev logging middleware
 if (process.env.NODE_ENV === 'development') {
@@ -67,4 +69,4 @@ if(process.env.NODE_ENV === "production") {
   })
 }
 
-module.exports = app; 
+module.exports = app;
