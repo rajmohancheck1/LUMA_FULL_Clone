@@ -88,10 +88,9 @@ const ViewStreamPage = () => {
     const connectToStream = async () => {
       try {
         // First get the stream details
-        const apiUrl =
-          process.env.NODE_ENV === 'production'
-            ? 'https://luwitch.onrender.com/api/streams'
-            : 'http://localhost:5000/api/streams';
+        const apiUrl = process.env.NODE_ENV === 'production' 
+          ? 'https://luwitch.onrender.com/api/streams'
+          : 'http://localhost:5000/api/streams';
         const response = await axios.get(apiUrl);
         console.log('Available streams:', response.data.streams);
 
@@ -167,9 +166,10 @@ const ViewStreamPage = () => {
         };
 
         // Connect to Socket.IO server
-        const socketUrl =
-          process.env.NODE_ENV === 'production' ? window.location.origin : 'http://localhost:5000';
-
+        const socketUrl = process.env.NODE_ENV === 'production' 
+          ? window.location.origin 
+          : 'http://localhost:5000';
+        
         console.log('Connecting to socket server at:', socketUrl);
         const socket = io(socketUrl, {
           transports: ['websocket'],
@@ -318,11 +318,10 @@ const ViewStreamPage = () => {
         socketRef.current.emit('end-stream');
       }
 
-      const apiBaseUrl =
-        process.env.NODE_ENV === 'production'
-          ? 'https://luwitch.onrender.com'
-          : 'http://localhost:5000';
-
+      const apiBaseUrl = process.env.NODE_ENV === 'production' 
+        ? 'https://luwitch.onrender.com'
+        : 'http://localhost:5000';
+        
       await axios.post(
         `${apiBaseUrl}/api/events/${eventId}/stop-streaming`,
         {},
