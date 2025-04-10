@@ -1,16 +1,16 @@
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import { useState, useEffect } from 'react';
+import { getImageUrl } from '../utils/imageUrl';
 
 const EventCard = ({ event }) => {
   const [imageUrl, setImageUrl] = useState('/default-event.jpg');
 
   useEffect(() => {
-    if (event.image) {
-      // Use the direct path to the events uploads folder
-      const baseUrl = `${process.env.REACT_APP_API_URL}/uploads/events/${event.image}`;
-      setImageUrl(`${baseUrl}?t=${Date.now()}`);
-    } else {
+    try {
+      setImageUrl(getImageUrl(event.image, true));
+    } catch (error) {
+      console.error('Error setting image URL:', error);
       setImageUrl('/default-event.jpg');
     }
   }, [event.image]);
