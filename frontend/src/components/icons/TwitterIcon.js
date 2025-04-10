@@ -5,4 +5,4 @@ const TwitterIcon = ({ className }) => (
 );
 
 export { TwitterIcon };
-export default TwitterIcon; 
+export default TwitterIcon;

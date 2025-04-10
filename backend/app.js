@@ -58,7 +58,8 @@ app.use('/api/streams', streamRoutes);
 // Error handler
 app.use(errorHandler);
 
-// Add this after other middleware
+// Serve uploaded files
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 app.use('/uploads/events', express.static(path.join(__dirname, 'public/uploads/events')));
 
 

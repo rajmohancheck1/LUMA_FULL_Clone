@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  format, 
-  startOfMonth, 
-  endOfMonth, 
-  eachDayOfInterval, 
-  isSameMonth, 
-  isSameDay, 
-  addMonths, 
+import {
+  format,
+  startOfMonth,
+  endOfMonth,
+  eachDayOfInterval,
+  isSameMonth,
+  isSameDay,
+  addMonths,
   subMonths,
   startOfWeek,
   endOfWeek,
-  parseISO 
+  parseISO
 } from 'date-fns';
 import { ChevronLeftIcon, ChevronRightIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import api from '../../utils/api';
@@ -49,7 +49,7 @@ const CalendarView = () => {
     fetchEvents();
   }, []);
 
-  const getEventsForDate = (date) => {
+  const getEventsForDate = date => {
     if (!Array.isArray(events)) return [];
     return events.filter(event => {
       try {
@@ -62,7 +62,7 @@ const CalendarView = () => {
     });
   };
 
-  const handleDateClick = (date) => {
+  const handleDateClick = date => {
     const dateEvents = getEventsForDate(date);
     if (dateEvents.length > 0) {
       setSelectedDate(date);
@@ -76,9 +76,9 @@ const CalendarView = () => {
     const calendarStart = startOfWeek(monthStart);
     const calendarEnd = endOfWeek(monthEnd);
 
-    const days = eachDayOfInterval({ 
-      start: calendarStart, 
-      end: calendarEnd 
+    const days = eachDayOfInterval({
+      start: calendarStart,
+      end: calendarEnd
     });
 
     return days.map((day, index) => {
@@ -89,16 +89,15 @@ const CalendarView = () => {
       return (
         <div
           key={index}
-          className={`calendar-day ${!isCurrentMonth ? 'other-month' : ''} ${hasEvents ? 'has-events' : ''}`}
+          className={`calendar-day ${!isCurrentMonth ? 'other-month' : ''} ${
+            hasEvents ? 'has-events' : ''
+          }`}
           onClick={() => handleDateClick(day)}
         >
           <div className="day-number">{format(day, 'd')}</div>
           <div className="day-events">
             {dayEvents.map((event, eventIndex) => (
-              <div 
-                key={eventIndex} 
-                className="event-item"
-              >
+              <div key={eventIndex} className="event-item">
                 • {event.title}
               </div>
             ))}
@@ -112,22 +111,20 @@ const CalendarView = () => {
     <div className="calendar-page">
       <div className="sidebar">
         <h3>Live Streams</h3>
-        <div className="live-streams">
-          No live streams available
-        </div>
+        <div className="live-streams">No live streams available</div>
       </div>
 
       <div className="main-calendar">
         <div className="calendar-header">
           <div className="month-navigation">
-            <button 
+            <button
               className="nav-button"
               onClick={() => setCurrentDate(subMonths(currentDate, 1))}
             >
               <ChevronLeftIcon className="h-5 w-5" />
             </button>
             <h2>{format(currentDate, 'MMMM yyyy')}</h2>
-            <button 
+            <button
               className="nav-button"
               onClick={() => setCurrentDate(addMonths(currentDate, 1))}
             >
@@ -153,10 +150,7 @@ const CalendarView = () => {
             <div className="modal-content">
               <div className="modal-header">
                 <h3>{format(selectedDate, 'MMMM d, yyyy')}</h3>
-                <button 
-                  className="close-button"
-                  onClick={() => setSelectedDate(null)}
-                >
+                <button className="close-button" onClick={() => setSelectedDate(null)}>
                   <XMarkIcon className="h-5 w-5" />
                 </button>
               </div>

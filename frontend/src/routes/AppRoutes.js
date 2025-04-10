@@ -19,57 +19,69 @@ const AppRoutes = () => {
     <>
       <Navbar />
       <Routes>
-        <Route path="/events/:id/manage" element={
-          <PrivateRoute>
-            <EventManagement />
-          </PrivateRoute>
-        } />
-        <Route path="/" element={
-          
-            <BrowseEvents />
-          
-        } />
-        <Route path="/events" element={
-          <div className="min-h-screen bg-gray-900 text-white">
-            <Home />
-          </div>
-        } />
-        
+        <Route
+          path="/events/:id/manage"
+          element={
+            <PrivateRoute>
+              <EventManagement />
+            </PrivateRoute>
+          }
+        />
+        <Route path="/" element={<BrowseEvents />} />
+        <Route
+          path="/events"
+          element={
+            <div className="min-h-screen bg-gray-900 text-white">
+              <Home />
+            </div>
+          }
+        />
+
         {/* Create Stream Page */}
-        <Route path="/create-stream/:eventId" element={ 
-        <PrivateRoute>
-        <CreateStreamPage />
-        </PrivateRoute>} />
+        <Route
+          path="/create-stream/:eventId"
+          element={
+            <PrivateRoute>
+              <CreateStreamPage />
+            </PrivateRoute>
+          }
+        />
 
         {/* View Stream Page */}
         <Route path="/view-stream/:eventId" element={<ViewStreamPage />} />
 
-            
-
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/events/:id" element={<EventDetails />} />
-        <Route path="/create-event" element={
-          <PrivateRoute>
-            <CreateEvent />
-          </PrivateRoute>
-        } />
-        <Route path="/dashboard" element={
-          <PrivateRoute>
-            <div className="min-h-screen bg-gray-900 text-white">
-              <Dashboard />
-            </div>
-          </PrivateRoute>
-        } />
-        <Route path="/calender" element={
-          <PrivateRoute>
-            <CalendarView/>
-            
-          </PrivateRoute>
-        } />
+        <Route
+          path="/create-event"
+          element={
+            <PrivateRoute>
+              <CreateEvent />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            <PrivateRoute>
+              <div className="min-h-screen bg-gray-900 text-white">
+                <Dashboard />
+              </div>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/calender"
+          element={
+            <PrivateRoute>
+              <CalendarView />
+            </PrivateRoute>
+          }
+        />
       </Routes>
     </>
   );
 };
 
-export default AppRoutes; 
+export default AppRoutes;

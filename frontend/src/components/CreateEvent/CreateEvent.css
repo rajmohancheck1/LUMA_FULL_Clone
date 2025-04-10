@@ -1,187 +1,187 @@
 .event-creator {
-    min-height: 100vh;
-    background: linear-gradient(135deg, #2b1810 0%, #1a0f0a 100%);
-    color: white;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #2b1810 0%, #1a0f0a 100%);
+  color: white;
 }
 
 .top-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 2rem;
-    background: rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: rgba(0, 0, 0, 0.2);
 }
 
 .navigation {
-    display: flex;
-    gap: 2rem;
+  display: flex;
+  gap: 2rem;
 }
 
 .nav-item {
-    cursor: pointer;
-    opacity: 0.7;
-    transition: opacity 0.3s;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.3s;
 }
 
 .nav-item:hover,
 .nav-item.active {
-    opacity: 1;
+  opacity: 1;
 }
 
 .event-form {
-    max-width: 1200px;
-    margin: 2rem auto;
-    padding: 0 2rem;
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 2rem;
 }
 
 .event-content {
-    display: grid;
-    grid-template-columns: 300px 1fr;
-    gap: 2rem;
-    background: rgba(0, 0, 0, 0.3);
-    padding: 2rem;
-    border-radius: 12px;
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 2rem;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 2rem;
+  border-radius: 12px;
 }
 
 .image-section {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .image-upload {
-    width: 100%;
-    aspect-ratio: 1;
-    background: linear-gradient(135deg, #0066ff 0%, #ff00ff 100%);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: transform 0.3s;
-    position: relative;
-    overflow: hidden;
+  width: 100%;
+  aspect-ratio: 1;
+  background: linear-gradient(135deg, #0066ff 0%, #ff00ff 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.3s;
+  position: relative;
+  overflow: hidden;
 }
 
 .image-upload:hover {
-    transform: scale(1.02);
+  transform: scale(1.02);
 }
 
 .upload-icon {
-    font-size: 2rem;
-    color: white;
+  font-size: 2rem;
+  color: white;
 }
 
 .theme-selector {
-    width: 100%;
+  width: 100%;
 }
 
 .theme-dropdown {
-    width: 100%;
-    padding: 0.5rem;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 6px;
-    color: white;
+  width: 100%;
+  padding: 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  color: white;
 }
 
 .form-section {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
 .event-title {
-    font-size: 2rem;
-    padding: 0.5rem;
-    background: transparent;
-    border: none;
-    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
-    color: white;
-    width: 100%;
+  font-size: 2rem;
+  padding: 0.5rem;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  width: 100%;
 }
 
 .event-title:focus {
-    outline: none;
-    border-bottom-color: rgba(255, 255, 255, 0.5);
+  outline: none;
+  border-bottom-color: rgba(255, 255, 255, 0.5);
 }
 
 .time-section {
-    display: grid;
-    grid-template-columns: 1fr 1fr auto;
-    gap: 1rem;
-    align-items: end;
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 1rem;
+  align-items: end;
 }
 
 .time-input {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .time-input input {
-    padding: 0.5rem;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 6px;
-    color: white;
+  padding: 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  color: white;
 }
 
 .timezone {
-    color: rgba(255, 255, 255, 0.7);
-    align-self: center;
+  color: rgba(255, 255, 255, 0.7);
+  align-self: center;
 }
 
 .form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .form-input {
-    padding: 0.5rem;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 6px;
-    color: white;
+  padding: 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  color: white;
 }
 
 .description {
-    min-height: 100px;
-    resize: vertical;
+  min-height: 100px;
+  resize: vertical;
 }
 
 .virtual-option {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
 }
 
 .create-event-btn {
-    padding: 1rem;
-    background: linear-gradient(135deg, #0066ff 0%, #ff00ff 100%);
-    border: none;
-    border-radius: 6px;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-    transition: transform 0.3s;
+  padding: 1rem;
+  background: linear-gradient(135deg, #0066ff 0%, #ff00ff 100%);
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.3s;
 }
 
 .create-event-btn:hover:not(:disabled) {
-    transform: translateY(-2px);
+  transform: translateY(-2px);
 }
 
 .create-event-btn:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 .error-message {
-    color: #ff4444;
-    padding: 0.5rem;
-    background: rgba(255, 68, 68, 0.1);
-    border-radius: 6px;
-    margin-top: 1rem;
+  color: #ff4444;
+  padding: 0.5rem;
+  background: rgba(255, 68, 68, 0.1);
+  border-radius: 6px;
+  margin-top: 1rem;
 }

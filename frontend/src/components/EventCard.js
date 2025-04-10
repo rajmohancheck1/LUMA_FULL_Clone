@@ -15,7 +15,7 @@ const EventCard = ({ event }) => {
     }
   }, [event.image]);
 
-  const handleImageError = (e) => {
+  const handleImageError = e => {
     console.log('Image failed to load:', {
       imageUrl,
       eventImage: event.image,
@@ -41,7 +41,9 @@ const EventCard = ({ event }) => {
         </div>
         <div className="text-gray-400 mb-2">{event.location}</div>
         <div className="flex justify-between items-center mt-4">
-          <span className="text-blue-400 font-semibold">${event.price ? event.price.toFixed(2) : '0.00'}</span>
+          <span className="text-blue-400 font-semibold">
+            ${event.price ? event.price.toFixed(2) : '0.00'}
+          </span>
           <Link
             to={`/events/${event._id}`}
             className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"

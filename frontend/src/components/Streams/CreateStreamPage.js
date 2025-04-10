@@ -17,7 +17,7 @@ const CreateStreamPage = () => {
   const [isChatCollapsed, setIsChatCollapsed] = useState(true);
   const videoContainerRef = useRef(null);
 
-  const getCookie = (name) => {
+  const getCookie = name => {
     const cookieArr = document.cookie.split(';');
     for (let cookie of cookieArr) {
       const [cookieName, cookieValue] = cookie.trim().split('=');
@@ -30,8 +30,8 @@ const CreateStreamPage = () => {
 
   const startCamera = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: true, 
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
         audio: {
           echoCancellation: true,
           noiseSuppression: true,
@@ -43,7 +43,7 @@ const CreateStreamPage = () => {
 
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
-        
+
         // Ensure audio tracks are enabled
         stream.getAudioTracks().forEach(track => {
           track.enabled = true;
@@ -78,7 +78,7 @@ const CreateStreamPage = () => {
         }
       } else {
         // Switch to screen sharing
-        const screenStream = await navigator.mediaDevices.getDisplayMedia({ 
+        const screenStream = await navigator.mediaDevices.getDisplayMedia({
           video: true,
           audio: true
         });
@@ -142,9 +142,7 @@ const CreateStreamPage = () => {
 
   useEffect(() => {
     const configuration = {
-      iceServers: [
-        { urls: 'stun:stun.l.google.com:19302' }
-      ]
+      iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
     };
 
     const startStream = async () => {
@@ -155,7 +153,12 @@ const CreateStreamPage = () => {
         console.log('Creating stream for event:', eventId);
 
         // Register stream with backend
-        const response = await axios.post('http://localhost:5000/api/streams', {
+        const apiBaseUrl =
+          process.env.NODE_ENV === 'production'
+            ? 'https://luwitch.onrender.com'
+            : 'http://localhost:5000';
+
+        const response = await axios.post(`${apiBaseUrl}/api/streams`, {
           title: 'Live Stream',
           streamerId: eventId
         });
@@ -165,7 +168,11 @@ const CreateStreamPage = () => {
         console.log('Stream created with ID:', streamId);
 
         // Connect to Socket.IO server
-        const socket = io('http://localhost:5000', {
+        const socketUrl =
+          process.env.NODE_ENV === 'production' ? window.location.origin : 'http://localhost:5000';
+
+        console.log('Connecting to socket server at:', socketUrl);
+        const socket = io(socketUrl, {
           transports: ['websocket'],
           reconnection: true,
           reconnectionAttempts: 3,
@@ -175,10 +182,10 @@ const CreateStreamPage = () => {
         socket.on('connect', () => {
           console.log('Connected to server');
           setSocketConnected(true);
-          socket.emit('register-broadcaster', { 
+          socket.emit('register-broadcaster', {
             streamId: streamId,
-            eventId: eventId  // Make sure to pass the eventId
-          }); 
+            eventId: eventId // Make sure to pass the eventId
+          });
         });
 
         socketRef.current = socket;
@@ -251,14 +258,17 @@ const CreateStreamPage = () => {
         });
 
         // Update event streaming status
-        await axios.post(`http://localhost:5000/api/events/${eventId}/start-streaming`, {}, {
-          headers: {
-            Authorization: `Bearer ${token}`
+        await axios.post(
+          `${apiBaseUrl}/api/events/${eventId}/start-streaming`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
           }
-        });
+        );
 
         console.log('Stream started and event updated');
-
       } catch (error) {
         console.error('Error starting stream:', error);
       }
@@ -296,27 +306,25 @@ const CreateStreamPage = () => {
           track.stop();
           track.enabled = false;
         });
-        
+
         // Clear the video source
         if (videoRef.current) {
           videoRef.current.srcObject = null;
         }
-        
+
         // Get the streamId from the socket reference
         const streamId = eventId;
-        
-        // Check token validity
-        // if (!token) {
-        //   console.error("No authentication token found");
-        //   alert("Authentication error. Please log in again.");
-        //   navigate('/login');
-        //   return;
-        // }
-        
+
+        // Define API base URL
+        const apiBaseUrl =
+          process.env.NODE_ENV === 'production'
+            ? 'https://luwitch.onrender.com'
+            : 'http://localhost:5000';
+
         // Delete the stream first
         if (streamId) {
           try {
-            await axios.delete(`http://localhost:5000/api/streams/${streamId}`, {
+            await axios.delete(`${apiBaseUrl}/api/streams/${streamId}`, {
               headers: {
                 Authorization: `Bearer ${token}`
               }
@@ -327,60 +335,64 @@ const CreateStreamPage = () => {
             // Continue with other operations even if this fails
           }
         }
-        
+
         // Update event streaming status with proper authorization
         try {
-          await axios.post(`http://localhost:5000/api/events/${eventId}/stop-streaming`, {}, {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
+          await axios.post(
+            `${apiBaseUrl}/api/events/${eventId}/stop-streaming`,
+            {},
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+              }
             }
-          });
+          );
           console.log('Event updated to not streaming');
         } catch (eventError) {
           console.error('Error updating event:', eventError);
           // Continue with other operations even if this fails
         }
-        
+
         // Notify server that stream is ending
         if (socketRef.current && socketRef.current.connected) {
           socketRef.current.emit('end-stream', { streamId, eventId });
           socketRef.current.disconnect();
           setSocketConnected(false);
         }
-        
+
         // Close all peer connections
         Object.values(peerConnectionsRef.current).forEach(pc => {
           if (pc && typeof pc.close === 'function') {
             pc.close();
           }
         });
-        
+
         // Clear peer connections
         peerConnectionsRef.current = {};
-        
+
         // Clear the media stream reference
         setMediaStream(null);
-        
+
         // Navigate back to browse
         navigate('/browse');
       } catch (error) {
         console.error('Error stopping stream:', error);
-        
+
         // Still clean up client-side resources even if server requests fail
         if (socketRef.current && socketRef.current.connected) {
           socketRef.current.disconnect();
           setSocketConnected(false);
         }
-        
+
         Object.values(peerConnectionsRef.current).forEach(pc => {
           if (pc && typeof pc.close === 'function') {
             pc.close();
           }
         });
-        
+
         setMediaStream(null);
-        
+
         // Navigate away even if there were errors
         navigate('/browse');
       }
@@ -390,21 +402,27 @@ const CreateStreamPage = () => {
   return (
     <div style={{ textAlign: 'center', padding: '20px' }}>
       <h2>Broadcasting Stream</h2>
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center',
-        alignItems: 'flex-start',
-        gap: '20px',
-        maxWidth: '1400px',
-        margin: '0 auto'
-      }}>
-        <div style={{ flex: '1', marginBottom: '20px',
-          transition:"width 0.3s ease",
-          width: isChatCollapsed? '100%':"calc(100%-320px)"
-         }}>
-          <div 
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'flex-start',
+          gap: '20px',
+          maxWidth: '1400px',
+          margin: '0 auto'
+        }}
+      >
+        <div
+          style={{
+            flex: '1',
+            marginBottom: '20px',
+            transition: 'width 0.3s ease',
+            width: isChatCollapsed ? '100%' : 'calc(100%-320px)'
+          }}
+        >
+          <div
             ref={videoContainerRef}
-            style={{ 
+            style={{
               position: 'relative',
               width: '100%',
               backgroundColor: '#000',
@@ -418,12 +436,12 @@ const CreateStreamPage = () => {
               })
             }}
           >
-            <video 
-              ref={videoRef} 
-              autoPlay 
-              playsInline 
+            <video
+              ref={videoRef}
+              autoPlay
+              playsInline
               muted
-              style={{ 
+              style={{
                 width: '100%',
                 height: isFullscreen ? '100vh' : '75vh',
                 maxHeight: isFullscreen ? 'none' : '75vh',
@@ -431,32 +449,35 @@ const CreateStreamPage = () => {
                 objectFit: isFullscreen ? 'contain' : 'cover'
               }}
             />
-            <div style={{
-              position: 'absolute',
-              bottom: 0,
-              left: 0,
-              right: 0,
-              padding: '20px',
-              background: 'linear-gradient(transparent, rgba(0,0,0,0.7))',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '15px',
-              opacity: '0',
-              transition: 'opacity 0.3s',
-              zIndex: 1000
-            }}
-            onMouseEnter={e => e.currentTarget.style.opacity = '1'}
-            onMouseLeave={e => e.currentTarget.style.opacity = '0'}
+            <div
+              style={{
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                right: 0,
+                padding: '20px',
+                background: 'linear-gradient(transparent, rgba(0,0,0,0.7))',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '15px',
+                opacity: '0',
+                transition: 'opacity 0.3s',
+                zIndex: 1000
+              }}
+              onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
+              onMouseLeave={e => (e.currentTarget.style.opacity = '0')}
             >
-              <div style={{ 
-                display: 'flex', 
-                gap: '20px', 
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center'
-              }}>
+              <div
+                style={{
+                  display: 'flex',
+                  gap: '20px',
+                  flex: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center'
+                }}
+              >
                 {/* Screen Share Button */}
-                <button 
+                <button
                   onClick={handleScreenShare}
                   style={{
                     background: 'none',
@@ -471,35 +492,35 @@ const CreateStreamPage = () => {
                     opacity: '0.9',
                     transition: 'opacity 0.2s'
                   }}
-                  onMouseEnter={e => e.target.style.opacity = '1'}
-                  onMouseLeave={e => e.target.style.opacity = '0.9'}
+                  onMouseEnter={e => (e.target.style.opacity = '1')}
+                  onMouseLeave={e => (e.target.style.opacity = '0.9')}
                   title={isScreenSharing ? 'Stop Screen Share' : 'Share Screen'}
                 >
                   {isScreenSharing ? '🖥' : '📱'}
                 </button>
 
                 {/* End Stream Button */}
-                <button 
-  onClick={handleEndStream}
-  style={{
-    background: 'none',
-    border: 'none',
-    color: '#ff4444',
-    cursor: 'pointer',
-    padding: '8px',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '5px',
-    fontSize: '20px',
-    opacity: '0.9',
-    transition: 'opacity 0.2s'
-  }}
-  onMouseEnter={e => e.target.style.opacity = '1'}
-  onMouseLeave={e => e.target.style.opacity = '0.9'}
-  title="End Stream"
->
-⏹
-</button>   
+                <button
+                  onClick={handleEndStream}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#ff4444',
+                    cursor: 'pointer',
+                    padding: '8px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '5px',
+                    fontSize: '20px',
+                    opacity: '0.9',
+                    transition: 'opacity 0.2s'
+                  }}
+                  onMouseEnter={e => (e.target.style.opacity = '1')}
+                  onMouseLeave={e => (e.target.style.opacity = '0.9')}
+                  title="End Stream"
+                >
+                  ⏹
+                </button>
 
                 {/* Fullscreen Button */}
                 <button
@@ -514,8 +535,8 @@ const CreateStreamPage = () => {
                     opacity: '0.9',
                     transition: 'opacity 0.2s'
                   }}
-                  onMouseEnter={e => e.target.style.opacity = '1'}
-                  onMouseLeave={e => e.target.style.opacity = '0.9'}
+                  onMouseEnter={e => (e.target.style.opacity = '1')}
+                  onMouseLeave={e => (e.target.style.opacity = '0.9')}
                   title={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}
                 >
                   {isFullscreen ? '⤓' : '⤢'}
@@ -525,11 +546,9 @@ const CreateStreamPage = () => {
           </div>
         </div>
         {socketConnected && (
-          <div style={{ width: isChatCollapsed ? '50px' : '320px',
-            transition:"width 0.3s ease"
-           }}>
-            <ChatBox 
-              socket={socketRef.current} 
+          <div style={{ width: isChatCollapsed ? '50px' : '320px', transition: 'width 0.3s ease' }}>
+            <ChatBox
+              socket={socketRef.current}
               eventId={eventId}
               isBroadcaster={true}
               onCollapseChange={setIsChatCollapsed}

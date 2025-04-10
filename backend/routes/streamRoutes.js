@@ -10,8 +10,8 @@ router.post('/', createStream);
 // Get all active streams route
 router.get('/', getStreams);
 
-// End stream route
-// router.delete('/:streamId', endStream);
+//End stream route
+//router.delete('/:streamId', endStream);
 
 // Delete stream route
 router.delete('/:streamId', deleteStream);

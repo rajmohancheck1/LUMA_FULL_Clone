@@ -55,39 +55,45 @@ const EventInsights = ({ event }) => {
     }
   };
 
-  const processChartData = (data) => {
+  const processChartData = data => {
     if (!data) return;
 
     const registrationData = {
       labels: data.registrationTimeline.map(item => format(new Date(item.date), 'MMM d')),
-      datasets: [{
-        label: 'Registrations',
-        data: data.registrationTimeline.map(item => item.count),
-        borderColor: 'rgb(75, 192, 192)',
-        tension: 0.1
-      }]
+      datasets: [
+        {
+          label: 'Registrations',
+          data: data.registrationTimeline.map(item => item.count),
+          borderColor: 'rgb(75, 192, 192)',
+          tension: 0.1
+        }
+      ]
     };
 
     const ticketDistribution = {
       labels: Object.keys(data.ticketTypeDistribution),
-      datasets: [{
-        data: Object.values(data.ticketTypeDistribution),
-        backgroundColor: [
-          'rgb(255, 99, 132)',
-          'rgb(54, 162, 235)',
-          'rgb(255, 205, 86)',
-          'rgb(75, 192, 192)'
-        ]
-      }]
+      datasets: [
+        {
+          data: Object.values(data.ticketTypeDistribution),
+          backgroundColor: [
+            'rgb(255, 99, 132)',
+            'rgb(54, 162, 235)',
+            'rgb(255, 205, 86)',
+            'rgb(75, 192, 192)'
+          ]
+        }
+      ]
     };
 
     const trafficSources = {
       labels: Object.keys(data.trafficSources),
-      datasets: [{
-        label: 'Traffic Sources',
-        data: Object.values(data.trafficSources),
-        backgroundColor: 'rgb(54, 162, 235)'
-      }]
+      datasets: [
+        {
+          label: 'Traffic Sources',
+          data: Object.values(data.trafficSources),
+          backgroundColor: 'rgb(54, 162, 235)'
+        }
+      ]
     };
 
     setChartData({
@@ -107,7 +113,7 @@ const EventInsights = ({ event }) => {
       <div className="flex justify-end">
         <select
           value={timeRange}
-          onChange={(e) => setTimeRange(e.target.value)}
+          onChange={e => setTimeRange(e.target.value)}
           className="bg-gray-700 border-gray-600 rounded-md text-white px-4 py-2"
         >
           <option value="7days">Last 7 Days</option>
@@ -122,30 +128,22 @@ const EventInsights = ({ event }) => {
         <div className="bg-gray-800 rounded-lg p-4">
           <h3 className="text-gray-400 text-sm">Total Registrations</h3>
           <p className="text-2xl font-bold">{insights.totalRegistrations}</p>
-          <p className="text-sm text-green-400">
-            +{insights.registrationGrowth}% from last period
-          </p>
+          <p className="text-sm text-green-400">+{insights.registrationGrowth}% from last period</p>
         </div>
         <div className="bg-gray-800 rounded-lg p-4">
           <h3 className="text-gray-400 text-sm">Page Views</h3>
           <p className="text-2xl font-bold">{insights.pageViews}</p>
-          <p className="text-sm text-blue-400">
-            {insights.averageViewsPerDay} avg. daily views
-          </p>
+          <p className="text-sm text-blue-400">{insights.averageViewsPerDay} avg. daily views</p>
         </div>
         <div className="bg-gray-800 rounded-lg p-4">
           <h3 className="text-gray-400 text-sm">Conversion Rate</h3>
           <p className="text-2xl font-bold">{insights.conversionRate}%</p>
-          <p className="text-sm text-yellow-400">
-            {insights.conversionTrend}% from last period
-          </p>
+          <p className="text-sm text-yellow-400">{insights.conversionTrend}% from last period</p>
         </div>
         <div className="bg-gray-800 rounded-lg p-4">
           <h3 className="text-gray-400 text-sm">Revenue</h3>
           <p className="text-2xl font-bold">${insights.revenue}</p>
-          <p className="text-sm text-green-400">
-            ${insights.averageOrderValue} avg. order value
-          </p>
+          <p className="text-sm text-green-400">${insights.averageOrderValue} avg. order value</p>
         </div>
       </div>
 
@@ -246,4 +244,4 @@ const EventInsights = ({ event }) => {
   );
 };
 
-export default EventInsights; 
+export default EventInsights;

@@ -36,7 +36,7 @@ const CreateEvent = () => {
     });
   };
 
-  const handleImageChange = (e) => {
+  const handleImageChange = e => {
     const file = e.target.files[0];
     if (file) {
       setImage(file);
@@ -52,13 +52,13 @@ const CreateEvent = () => {
     e.preventDefault();
     try {
       setLoading(true);
-      
+
       const eventFormData = new FormData();
-      
+
       // Format dates and times
       const startDateTime = `${formData.startDate}T${formData.startTime}`;
       const endDateTime = `${formData.endDate}T${formData.endTime}`;
-      
+
       // Append all form fields
       eventFormData.append('title', formData.title);
       eventFormData.append('description', formData.description);
@@ -72,7 +72,7 @@ const CreateEvent = () => {
       eventFormData.append('capacity', formData.capacity);
       eventFormData.append('requireApproval', formData.requireApproval);
       eventFormData.append('timezone', formData.timezone);
-      
+
       if (image) {
         eventFormData.append('image', image);
       }
@@ -82,7 +82,7 @@ const CreateEvent = () => {
           'Content-Type': 'multipart/form-data'
         }
       });
-      
+
       navigate(`/events/${res.data.data._id}`);
     } catch (error) {
       setError(error.response?.data?.message || 'Failed to create event');
@@ -269,9 +269,7 @@ const CreateEvent = () => {
           </div>
         </div>
 
-        {error && (
-          <div className="text-red-600">{error}</div>
-        )}
+        {error && <div className="text-red-600">{error}</div>}
 
         <div className="flex justify-end">
           <button

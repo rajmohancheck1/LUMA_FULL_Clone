@@ -35,28 +35,30 @@ const EventOverview = ({ event, onUpdate }) => {
 
   useEffect(() => {
     if (event?.image) {
-      setCurrentImage(`${process.env.REACT_APP_API_URL}/uploads/events/${event.image}?t=${Date.now()}`);
+      setCurrentImage(
+        `${process.env.REACT_APP_API_URL}/uploads/events/${event.image}?t=${Date.now()}`
+      );
     } else {
       setCurrentImage('/default-event.jpg');
     }
   }, [event?.image]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     try {
       const formDataToSend = new FormData();
       Object.keys(formData).forEach(key => {
         formDataToSend.append(key, formData[key]);
       });
-      
+
       // Convert date and time to ISO string
       const dateTime = new Date(formData.date + 'T' + formData.time);
       formDataToSend.set('date', dateTime.toISOString());
-      
+
       if (image) {
         formDataToSend.append('image', image);
       }
-      
+
       await onUpdate(formDataToSend);
       setIsEditing(false);
       showNotification('Event updated successfully', 'success');
@@ -80,7 +82,7 @@ const EventOverview = ({ event, onUpdate }) => {
     }
   };
 
-  const handleImageError = (e) => {
+  const handleImageError = e => {
     console.log('Image failed to load:', {
       currentImage,
       eventImage: event.image,
@@ -103,15 +105,18 @@ const EventOverview = ({ event, onUpdate }) => {
     <div className="space-y-6">
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {renderStatCard('Total Registrations', 
+        {renderStatCard(
+          'Total Registrations',
           event.rsvps?.length || 0,
           <UsersIcon className="h-6 w-6 text-blue-500" />
         )}
-        {renderStatCard('Available Capacity',
+        {renderStatCard(
+          'Available Capacity',
           event.capacity - (event.rsvps?.length || 0),
           <UsersIcon className="h-6 w-6 text-green-500" />
         )}
-        {renderStatCard('Revenue',
+        {renderStatCard(
+          'Revenue',
           `$${(event.rsvps?.length || 0) * event.price}`,
           <CurrencyDollarIcon className="h-6 w-6 text-yellow-500" />
         )}
@@ -125,7 +130,9 @@ const EventOverview = ({ event, onUpdate }) => {
               <h2 className="text-2xl font-bold">{event.title}</h2>
               <div className="mt-2 flex items-center text-gray-400">
                 <CalendarIcon className="h-5 w-5 mr-2" />
-                <span>{format(new Date(event.date), 'PPP')} at {event.time}</span>
+                <span>
+                  {format(new Date(event.date), 'PPP')} at {event.time}
+                </span>
               </div>
               <div className="mt-2 flex items-center text-gray-400">
                 {event.isVirtual ? (
@@ -141,9 +148,7 @@ const EventOverview = ({ event, onUpdate }) => {
                 )}
               </div>
             </div>
-            <Button onClick={() => setIsEditing(true)}>
-              Edit Event
-            </Button>
+            <Button onClick={() => setIsEditing(true)}>Edit Event</Button>
           </div>
 
           <div className="mt-6">
@@ -170,9 +175,16 @@ const EventOverview = ({ event, onUpdate }) => {
                 <div className="flex justify-between">
                   <dt className="text-gray-400">Status</dt>
                   <dd>
-                    <span className={`px-2 py-1 rounded-full text-sm
-                      ${event.status === 'published' ? 'bg-green-600' : 
-                        event.status === 'draft' ? 'bg-gray-600' : 'bg-red-600'}`}>
+                    <span
+                      className={`px-2 py-1 rounded-full text-sm
+                      ${
+                        event.status === 'published'
+                          ? 'bg-green-600'
+                          : event.status === 'draft'
+                          ? 'bg-gray-600'
+                          : 'bg-red-600'
+                      }`}
+                    >
                       {event.status}
                     </span>
                   </dd>
@@ -199,18 +211,14 @@ const EventOverview = ({ event, onUpdate }) => {
       </div>
 
       {/* Edit Modal */}
-      <Modal
-        isOpen={isEditing}
-        onClose={() => setIsEditing(false)}
-        title="Edit Event"
-      >
+      <Modal isOpen={isEditing} onClose={() => setIsEditing(false)} title="Edit Event">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-300">Title</label>
             <input
               type="text"
               value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              onChange={e => setFormData({ ...formData, title: e.target.value })}
               className="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md text-white"
               required
             />
@@ -220,7 +228,7 @@ const EventOverview = ({ event, onUpdate }) => {
             <label className="block text-sm font-medium text-gray-300">Description</label>
             <textarea
               value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              onChange={e => setFormData({ ...formData, description: e.target.value })}
               rows={4}
               className="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md text-white"
               required
@@ -233,7 +241,7 @@ const EventOverview = ({ event, onUpdate }) => {
               <input
                 type="date"
                 value={formData.date}
-                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                onChange={e => setFormData({ ...formData, date: e.target.value })}
                 className="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md text-white"
                 required
               />
@@ -243,7 +251,7 @@ const EventOverview = ({ event, onUpdate }) => {
               <input
                 type="time"
                 value={formData.time}
-                onChange={(e) => setFormData({ ...formData, time: e.target.value })}
+                onChange={e => setFormData({ ...formData, time: e.target.value })}
                 className="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md text-white"
                 required
               />
@@ -254,7 +262,7 @@ const EventOverview = ({ event, onUpdate }) => {
             <label className="block text-sm font-medium text-gray-300">Category</label>
             <select
               value={formData.category}
-              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+              onChange={e => setFormData({ ...formData, category: e.target.value })}
               className="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md text-white"
               required
             >
@@ -273,7 +281,7 @@ const EventOverview = ({ event, onUpdate }) => {
               <input
                 type="number"
                 value={formData.price}
-                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                onChange={e => setFormData({ ...formData, price: e.target.value })}
                 className="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md text-white"
                 min="0"
                 required
@@ -284,7 +292,7 @@ const EventOverview = ({ event, onUpdate }) => {
               <input
                 type="number"
                 value={formData.capacity}
-                onChange={(e) => setFormData({ ...formData, capacity: e.target.value })}
+                onChange={e => setFormData({ ...formData, capacity: e.target.value })}
                 className="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md text-white"
                 min="1"
                 required
@@ -297,7 +305,7 @@ const EventOverview = ({ event, onUpdate }) => {
               <input
                 type="checkbox"
                 checked={formData.isVirtual}
-                onChange={(e) => setFormData({ ...formData, isVirtual: e.target.checked })}
+                onChange={e => setFormData({ ...formData, isVirtual: e.target.checked })}
                 className="h-4 w-4 bg-gray-700 border-gray-600 rounded"
               />
               <label className="ml-2 text-sm text-gray-300">Virtual Event</label>
@@ -306,7 +314,7 @@ const EventOverview = ({ event, onUpdate }) => {
               <input
                 type="url"
                 value={formData.virtualLink}
-                onChange={(e) => setFormData({ ...formData, virtualLink: e.target.value })}
+                onChange={e => setFormData({ ...formData, virtualLink: e.target.value })}
                 placeholder="Virtual Event Link"
                 className="mt-2 block w-full bg-gray-700 border-gray-600 rounded-md text-white"
               />
@@ -319,7 +327,7 @@ const EventOverview = ({ event, onUpdate }) => {
               <input
                 type="text"
                 value={formData.location}
-                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                onChange={e => setFormData({ ...formData, location: e.target.value })}
                 className="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md text-white"
                 required={!formData.isVirtual}
               />
@@ -330,7 +338,7 @@ const EventOverview = ({ event, onUpdate }) => {
             <label className="block text-sm font-medium text-gray-300">Status</label>
             <select
               value={formData.status}
-              onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+              onChange={e => setFormData({ ...formData, status: e.target.value })}
               className="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md text-white"
             >
               <option value="draft">Draft</option>
@@ -343,9 +351,7 @@ const EventOverview = ({ event, onUpdate }) => {
             <Button variant="secondary" onClick={() => setIsEditing(false)}>
               Cancel
             </Button>
-            <Button type="submit">
-              Save Changes
-            </Button>
+            <Button type="submit">Save Changes</Button>
           </div>
         </form>
       </Modal>
@@ -364,7 +370,7 @@ const EventOverview = ({ event, onUpdate }) => {
             <input
               type="file"
               accept="image/*"
-              onChange={(e) => setImage(e.target.files[0])}
+              onChange={e => setImage(e.target.files[0])}
               className="w-full"
             />
           </div>

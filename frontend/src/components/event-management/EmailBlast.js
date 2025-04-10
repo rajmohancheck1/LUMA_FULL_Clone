@@ -17,7 +17,7 @@ const EmailBlast = ({ event }) => {
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [isManageReminderModalOpen, setIsManageReminderModalOpen] = useState(false);
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
-  
+
   const [reminderSettings, setReminderSettings] = useState({
     enabled: true,
     schedule: [
@@ -80,10 +80,7 @@ const EmailBlast = ({ event }) => {
               </p>
             </div>
           </div>
-          <Button 
-            variant="secondary"
-            onClick={() => setIsManageReminderModalOpen(true)}
-          >
+          <Button variant="secondary" onClick={() => setIsManageReminderModalOpen(true)}>
             Manage
           </Button>
         </div>
@@ -96,15 +93,10 @@ const EmailBlast = ({ event }) => {
             <ClockIcon className="w-6 h-6 text-gray-400" />
             <div>
               <h4 className="font-medium text-white">Schedule Email Blast</h4>
-              <p className="text-sm text-gray-400">
-                Schedule emails to be sent at a specific time
-              </p>
+              <p className="text-sm text-gray-400">Schedule emails to be sent at a specific time</p>
             </div>
           </div>
-          <Button 
-            variant="secondary"
-            onClick={() => setIsScheduleModalOpen(true)}
-          >
+          <Button variant="secondary" onClick={() => setIsScheduleModalOpen(true)}>
             Schedule
           </Button>
         </div>
@@ -125,10 +117,12 @@ const EmailBlast = ({ event }) => {
             <input
               type="checkbox"
               checked={reminderSettings.enabled}
-              onChange={(e) => setReminderSettings({
-                ...reminderSettings,
-                enabled: e.target.checked
-              })}
+              onChange={e =>
+                setReminderSettings({
+                  ...reminderSettings,
+                  enabled: e.target.checked
+                })
+              }
               className="w-5 h-5 rounded border-gray-400 text-blue-600 focus:ring-blue-500 bg-gray-700"
             />
           </div>
@@ -136,20 +130,22 @@ const EmailBlast = ({ event }) => {
           {reminderSettings.enabled && (
             <div className="space-y-4">
               {reminderSettings.schedule.map((reminder, index) => (
-                <div 
-                  key={reminder.type} 
+                <div
+                  key={reminder.type}
                   className="flex items-center justify-between bg-gray-700 p-4 rounded-lg"
                 >
                   <div className="flex items-center space-x-3">
                     <ClockIcon className="w-5 h-5 text-gray-400" />
                     <label className="text-white">
-                      {reminder.type === 'day_before' ? 'Send reminder 24 hours before event' : 'Send reminder 1 hour before event'}
+                      {reminder.type === 'day_before'
+                        ? 'Send reminder 24 hours before event'
+                        : 'Send reminder 1 hour before event'}
                     </label>
                   </div>
                   <input
                     type="checkbox"
                     checked={reminder.enabled}
-                    onChange={(e) => {
+                    onChange={e => {
                       const newSchedule = [...reminderSettings.schedule];
                       newSchedule[index].enabled = e.target.checked;
                       setReminderSettings({
@@ -165,16 +161,10 @@ const EmailBlast = ({ event }) => {
           )}
 
           <div className="mt-6 flex justify-end space-x-3">
-            <Button 
-              variant="secondary" 
-              onClick={() => setIsManageReminderModalOpen(false)}
-            >
+            <Button variant="secondary" onClick={() => setIsManageReminderModalOpen(false)}>
               Cancel
             </Button>
-            <Button 
-              variant="primary"
-              onClick={handleUpdateReminders}
-            >
+            <Button variant="primary" onClick={handleUpdateReminders}>
               Save Changes
             </Button>
           </div>
@@ -193,10 +183,12 @@ const EmailBlast = ({ event }) => {
             <input
               type="text"
               value={scheduleData.subject}
-              onChange={(e) => setScheduleData({
-                ...scheduleData,
-                subject: e.target.value
-              })}
+              onChange={e =>
+                setScheduleData({
+                  ...scheduleData,
+                  subject: e.target.value
+                })
+              }
               className="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md text-white"
             />
           </div>
@@ -206,10 +198,12 @@ const EmailBlast = ({ event }) => {
             <textarea
               rows={6}
               value={scheduleData.message}
-              onChange={(e) => setScheduleData({
-                ...scheduleData,
-                message: e.target.value
-              })}
+              onChange={e =>
+                setScheduleData({
+                  ...scheduleData,
+                  message: e.target.value
+                })
+              }
               className="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md text-white"
             />
           </div>
@@ -219,10 +213,12 @@ const EmailBlast = ({ event }) => {
             <input
               type="datetime-local"
               value={scheduleData.scheduledFor}
-              onChange={(e) => setScheduleData({
-                ...scheduleData,
-                scheduledFor: e.target.value
-              })}
+              onChange={e =>
+                setScheduleData({
+                  ...scheduleData,
+                  scheduledFor: e.target.value
+                })
+              }
               className="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md text-white"
             />
           </div>
@@ -231,10 +227,12 @@ const EmailBlast = ({ event }) => {
             <label className="block text-sm font-medium text-gray-300">Recipients</label>
             <select
               value={scheduleData.recipients}
-              onChange={(e) => setScheduleData({
-                ...scheduleData,
-                recipients: e.target.value
-              })}
+              onChange={e =>
+                setScheduleData({
+                  ...scheduleData,
+                  recipients: e.target.value
+                })
+              }
               className="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md text-white"
             >
               <option value="all">All Attendees</option>
@@ -244,15 +242,10 @@ const EmailBlast = ({ event }) => {
           </div>
 
           <div className="mt-6 flex justify-end space-x-3">
-            <Button 
-              variant="secondary" 
-              onClick={() => setIsScheduleModalOpen(false)}
-            >
+            <Button variant="secondary" onClick={() => setIsScheduleModalOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleScheduleBlast}>
-              Schedule Blast
-            </Button>
+            <Button onClick={handleScheduleBlast}>Schedule Blast</Button>
           </div>
         </div>
       </Modal>
@@ -260,4 +253,4 @@ const EmailBlast = ({ event }) => {
   );
 };
 
-export default EmailBlast; 
+export default EmailBlast;

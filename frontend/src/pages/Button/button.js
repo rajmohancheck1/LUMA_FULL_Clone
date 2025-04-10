@@ -1,14 +1,14 @@
 import React from 'react';
 import './buttonn.css';
 
-export const Button = ({ 
+export const Button = ({
   variant = 'default',
   size = 'medium',
-  onClick, 
-  children, 
-  className = '', 
+  onClick,
+  children,
+  className = '',
   disabled = false,
-  ...props 
+  ...props
 }) => {
   const baseStyles = 'rounded-md font-medium transition-colors';
   const variants = {
@@ -25,14 +25,8 @@ export const Button = ({
   const classes = `${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`;
 
   return (
-    <button 
-      className={classes}
-      onClick={onClick}
-      disabled={disabled}
-      {...props}
-    >
+    <button className={classes} onClick={onClick} disabled={disabled} {...props}>
       {children}
     </button>
   );
 };
-

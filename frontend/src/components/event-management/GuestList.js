@@ -30,7 +30,7 @@ const GuestList = ({ eventId }) => {
   const [inviteEmails, setInviteEmails] = useState('');
   const [remainingInvites, setRemainingInvites] = useState(15);
   const { showNotification } = useNotification();
-  
+
   const rsvpLink = `${window.location.origin}/events/${eventId}`;
 
   useEffect(() => {
@@ -64,9 +64,7 @@ const GuestList = ({ eventId }) => {
       format(new Date(guest.createdAt), 'PPP')
     ]);
 
-    const csvContent = [headers, ...csvData]
-      .map(row => row.join(','))
-      .join('\n');
+    const csvContent = [headers, ...csvData].map(row => row.join(',')).join('\n');
 
     const blob = new Blob([csvContent], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
@@ -93,7 +91,7 @@ const GuestList = ({ eventId }) => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Invite Guests Card */}
         <div className="bg-gray-800 rounded-lg p-6">
-          <div 
+          <div
             className="flex flex-col items-center justify-center space-y-4 cursor-pointer"
             onClick={() => setIsShareModalOpen(true)}
           >
@@ -106,7 +104,7 @@ const GuestList = ({ eventId }) => {
 
         {/* Check In Card */}
         <div className="bg-gray-800 rounded-lg p-6">
-          <div 
+          <div
             className="flex flex-col items-center justify-center space-y-4 cursor-pointer"
             onClick={() => setIsCheckInModalOpen(true)}
           >
@@ -162,28 +160,46 @@ const GuestList = ({ eventId }) => {
             <table className="min-w-full divide-y divide-gray-700">
               <thead className="bg-gray-700">
                 <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
+                  >
                     Name
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
+                  >
                     Email
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
+                  >
                     Ticket Type
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
+                  >
                     Status
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
+                  >
                     Registration Date
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
+                  >
                     Actions
                   </th>
                 </tr>
               </thead>
               <tbody className="bg-gray-800 divide-y divide-gray-700">
-                {guests.map((guest) => (
+                {guests.map(guest => (
                   <tr key={guest._id}>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-white">{guest.user.name}</div>
@@ -197,11 +213,18 @@ const GuestList = ({ eventId }) => {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 py-1 text-xs font-medium rounded-full
-                        ${guest.status === 'attending' ? 'bg-green-900 text-green-200' :
-                          guest.status === 'pending' ? 'bg-yellow-900 text-yellow-200' :
-                          guest.status === 'cancelled' ? 'bg-red-900 text-red-200' :
-                          'bg-gray-900 text-gray-200'}`}>
+                      <span
+                        className={`px-2 py-1 text-xs font-medium rounded-full
+                        ${
+                          guest.status === 'attending'
+                            ? 'bg-green-900 text-green-200'
+                            : guest.status === 'pending'
+                            ? 'bg-yellow-900 text-yellow-200'
+                            : guest.status === 'cancelled'
+                            ? 'bg-red-900 text-red-200'
+                            : 'bg-gray-900 text-gray-200'
+                        }`}
+                      >
                         {guest.status}
                       </span>
                     </td>
@@ -214,7 +237,9 @@ const GuestList = ({ eventId }) => {
                       <Button
                         variant="secondary"
                         size="small"
-                        onClick={() => {/* Add edit functionality */}}
+                        onClick={() => {
+                          /* Add edit functionality */
+                        }}
                       >
                         Edit
                       </Button>
@@ -259,28 +284,52 @@ const GuestList = ({ eventId }) => {
             <h3 className="text-sm font-medium text-gray-300 mb-4">Share Options</h3>
             <div className="grid grid-cols-2 gap-3">
               <button
-                onClick={() => window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(rsvpLink)}&text=${encodeURIComponent('Join me at this event!')}`, '_blank')}
+                onClick={() =>
+                  window.open(
+                    `https://twitter.com/intent/tweet?url=${encodeURIComponent(
+                      rsvpLink
+                    )}&text=${encodeURIComponent('Join me at this event!')}`,
+                    '_blank'
+                  )
+                }
                 className="flex items-center justify-center space-x-2 bg-[#1DA1F2] text-white p-2 rounded-lg hover:bg-opacity-90"
               >
                 <TwitterIcon className="w-5 h-5" />
                 <span>Twitter</span>
               </button>
               <button
-                onClick={() => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(rsvpLink)}`, '_blank')}
+                onClick={() =>
+                  window.open(
+                    `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(rsvpLink)}`,
+                    '_blank'
+                  )
+                }
                 className="flex items-center justify-center space-x-2 bg-[#1877F2] text-white p-2 rounded-lg hover:bg-opacity-90"
               >
                 <FacebookIcon className="w-5 h-5" />
                 <span>Facebook</span>
               </button>
               <button
-                onClick={() => window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(rsvpLink)}`, '_blank')}
+                onClick={() =>
+                  window.open(
+                    `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
+                      rsvpLink
+                    )}`,
+                    '_blank'
+                  )
+                }
                 className="flex items-center justify-center space-x-2 bg-[#0A66C2] text-white p-2 rounded-lg hover:bg-opacity-90"
               >
                 <LinkedInIcon className="w-5 h-5" />
                 <span>LinkedIn</span>
               </button>
               <button
-                onClick={() => window.open(`mailto:?subject=Join me at this event!&body=${encodeURIComponent(rsvpLink)}`, '_blank')}
+                onClick={() =>
+                  window.open(
+                    `mailto:?subject=Join me at this event!&body=${encodeURIComponent(rsvpLink)}`,
+                    '_blank'
+                  )
+                }
                 className="flex items-center justify-center space-x-2 bg-gray-600 text-white p-2 rounded-lg hover:bg-opacity-90"
               >
                 <EnvelopeIcon className="w-5 h-5" />
@@ -294,16 +343,18 @@ const GuestList = ({ eventId }) => {
             <h3 className="text-sm font-medium text-gray-300 mb-4">Send Invites</h3>
             <textarea
               value={inviteEmails}
-              onChange={(e) => setInviteEmails(e.target.value)}
+              onChange={e => setInviteEmails(e.target.value)}
               placeholder="Enter email addresses separated by commas"
               className="w-full h-32 bg-gray-700 border border-gray-600 rounded-lg p-3 text-white placeholder-gray-400"
             />
-            
+
             <div className="text-center mt-4">
               <div className="text-gray-400 mb-2">or</div>
               <button
                 className="flex items-center justify-center space-x-2 w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700"
-                onClick={() => {/* Implement Google import */}}
+                onClick={() => {
+                  /* Implement Google import */
+                }}
               >
                 <GoogleIcon className="w-5 h-5" />
                 <span>Import from Google</span>
@@ -313,16 +364,15 @@ const GuestList = ({ eventId }) => {
 
           {/* Action Buttons */}
           <div className="flex justify-end space-x-3">
-            <Button
-              variant="secondary"
-              onClick={() => setIsShareModalOpen(false)}
-            >
+            <Button variant="secondary" onClick={() => setIsShareModalOpen(false)}>
               Cancel
             </Button>
             <Button
               variant="primary"
               disabled={!inviteEmails.trim()}
-              onClick={() => {/* Implement send invites */}}
+              onClick={() => {
+                /* Implement send invites */
+              }}
             >
               Send Invites
             </Button>
@@ -339,9 +389,7 @@ const GuestList = ({ eventId }) => {
         <div className="p-4">
           <div className="text-center py-8">
             <QrCodeIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-300">
-              QR code scanner functionality coming soon...
-            </p>
+            <p className="text-gray-300">QR code scanner functionality coming soon...</p>
           </div>
         </div>
       </Modal>
@@ -349,4 +397,4 @@ const GuestList = ({ eventId }) => {
   );
 };
 
-export default GuestList; 
+export default GuestList;

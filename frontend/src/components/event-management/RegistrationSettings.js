@@ -3,11 +3,7 @@ import Button from '../Button';
 import { useNotification } from '../../context/NotificationContext';
 import api from '../../utils/api';
 import Modal from '../Modal';
-import {
-  PlusIcon,
-  TrashIcon,
-  QuestionMarkCircleIcon
-} from '@heroicons/react/24/outline';
+import { PlusIcon, TrashIcon, QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
 
 const RegistrationSettings = ({ event, onUpdate }) => {
   const { showNotification } = useNotification();
@@ -59,7 +55,7 @@ const RegistrationSettings = ({ event, onUpdate }) => {
     });
   };
 
-  const handleRemoveTicketType = (index) => {
+  const handleRemoveTicketType = index => {
     setSettings(prev => ({
       ...prev,
       ticketTypes: prev.ticketTypes.filter((_, i) => i !== index)
@@ -80,7 +76,7 @@ const RegistrationSettings = ({ event, onUpdate }) => {
     });
   };
 
-  const handleRemoveQuestion = (index) => {
+  const handleRemoveQuestion = index => {
     setSettings(prev => ({
       ...prev,
       customQuestions: prev.customQuestions.filter((_, i) => i !== index)
@@ -93,10 +89,7 @@ const RegistrationSettings = ({ event, onUpdate }) => {
       <div className="bg-gray-800 rounded-lg p-6">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-semibold">Ticket Types</h2>
-          <Button
-            onClick={() => setIsNewTicketModalOpen(true)}
-            className="flex items-center"
-          >
+          <Button onClick={() => setIsNewTicketModalOpen(true)} className="flex items-center">
             <PlusIcon className="h-5 w-5 mr-2" />
             Add Ticket Type
           </Button>
@@ -117,11 +110,7 @@ const RegistrationSettings = ({ event, onUpdate }) => {
                   <p className="mt-1 text-sm text-gray-400">{ticket.description}</p>
                 )}
               </div>
-              <Button
-                variant="danger"
-                size="sm"
-                onClick={() => handleRemoveTicketType(index)}
-              >
+              <Button variant="danger" size="sm" onClick={() => handleRemoveTicketType(index)}>
                 <TrashIcon className="h-4 w-4" />
               </Button>
             </div>
@@ -133,10 +122,7 @@ const RegistrationSettings = ({ event, onUpdate }) => {
       <div className="bg-gray-800 rounded-lg p-6">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-semibold">Custom Questions</h2>
-          <Button
-            onClick={() => setIsNewQuestionModalOpen(true)}
-            className="flex items-center"
-          >
+          <Button onClick={() => setIsNewQuestionModalOpen(true)} className="flex items-center">
             <PlusIcon className="h-5 w-5 mr-2" />
             Add Question
           </Button>
@@ -160,17 +146,11 @@ const RegistrationSettings = ({ event, onUpdate }) => {
                 <div className="mt-1 text-sm text-gray-400">
                   Type: {question.type}
                   {question.type !== 'text' && (
-                    <span className="ml-2">
-                      Options: {question.options.join(', ')}
-                    </span>
+                    <span className="ml-2">Options: {question.options.join(', ')}</span>
                   )}
                 </div>
               </div>
-              <Button
-                variant="danger"
-                size="sm"
-                onClick={() => handleRemoveQuestion(index)}
-              >
+              <Button variant="danger" size="sm" onClick={() => handleRemoveQuestion(index)}>
                 <TrashIcon className="h-4 w-4" />
               </Button>
             </div>
@@ -187,17 +167,22 @@ const RegistrationSettings = ({ event, onUpdate }) => {
               <input
                 type="checkbox"
                 checked={settings.requireApproval}
-                onChange={(e) => setSettings(prev => ({
-                  ...prev,
-                  requireApproval: e.target.checked
-                }))}
+                onChange={e =>
+                  setSettings(prev => ({
+                    ...prev,
+                    requireApproval: e.target.checked
+                  }))
+                }
                 className="h-4 w-4 bg-gray-700 border-gray-600 rounded"
               />
               <label className="ml-2 text-sm text-gray-300">
                 Require approval for registrations
               </label>
             </div>
-            <QuestionMarkCircleIcon className="h-5 w-5 text-gray-400" title="Enable manual approval for each registration" />
+            <QuestionMarkCircleIcon
+              className="h-5 w-5 text-gray-400"
+              title="Enable manual approval for each registration"
+            />
           </div>
 
           <div className="flex items-center justify-between">
@@ -205,30 +190,33 @@ const RegistrationSettings = ({ event, onUpdate }) => {
               <input
                 type="checkbox"
                 checked={settings.waitlist}
-                onChange={(e) => setSettings(prev => ({
-                  ...prev,
-                  waitlist: e.target.checked
-                }))}
+                onChange={e =>
+                  setSettings(prev => ({
+                    ...prev,
+                    waitlist: e.target.checked
+                  }))
+                }
                 className="h-4 w-4 bg-gray-700 border-gray-600 rounded"
               />
-              <label className="ml-2 text-sm text-gray-300">
-                Enable waitlist
-              </label>
+              <label className="ml-2 text-sm text-gray-300">Enable waitlist</label>
             </div>
-            <QuestionMarkCircleIcon className="h-5 w-5 text-gray-400" title="Allow registrations after capacity is reached" />
+            <QuestionMarkCircleIcon
+              className="h-5 w-5 text-gray-400"
+              title="Allow registrations after capacity is reached"
+            />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300">
-              Registration Deadline
-            </label>
+            <label className="block text-sm font-medium text-gray-300">Registration Deadline</label>
             <input
               type="datetime-local"
               value={settings.registrationDeadline}
-              onChange={(e) => setSettings(prev => ({
-                ...prev,
-                registrationDeadline: e.target.value
-              }))}
+              onChange={e =>
+                setSettings(prev => ({
+                  ...prev,
+                  registrationDeadline: e.target.value
+                }))
+              }
               className="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md text-white"
             />
           </div>
@@ -241,10 +229,12 @@ const RegistrationSettings = ({ event, onUpdate }) => {
               type="number"
               min="1"
               value={settings.maxTicketsPerOrder}
-              onChange={(e) => setSettings(prev => ({
-                ...prev,
-                maxTicketsPerOrder: parseInt(e.target.value)
-              }))}
+              onChange={e =>
+                setSettings(prev => ({
+                  ...prev,
+                  maxTicketsPerOrder: parseInt(e.target.value)
+                }))
+              }
               className="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md text-white"
             />
           </div>
@@ -253,9 +243,7 @@ const RegistrationSettings = ({ event, onUpdate }) => {
 
       {/* Save Button */}
       <div className="flex justify-end">
-        <Button onClick={handleSave}>
-          Save Changes
-        </Button>
+        <Button onClick={handleSave}>Save Changes</Button>
       </div>
 
       {/* New Ticket Modal */}
@@ -270,7 +258,7 @@ const RegistrationSettings = ({ event, onUpdate }) => {
             <input
               type="text"
               value={newTicket.name}
-              onChange={(e) => setNewTicket({ ...newTicket, name: e.target.value })}
+              onChange={e => setNewTicket({ ...newTicket, name: e.target.value })}
               className="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md text-white"
               required
             />
@@ -282,7 +270,7 @@ const RegistrationSettings = ({ event, onUpdate }) => {
               min="0"
               step="0.01"
               value={newTicket.price}
-              onChange={(e) => setNewTicket({ ...newTicket, price: parseFloat(e.target.value) })}
+              onChange={e => setNewTicket({ ...newTicket, price: parseFloat(e.target.value) })}
               className="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md text-white"
               required
             />
@@ -293,7 +281,7 @@ const RegistrationSettings = ({ event, onUpdate }) => {
               type="number"
               min="1"
               value={newTicket.capacity}
-              onChange={(e) => setNewTicket({ ...newTicket, capacity: parseInt(e.target.value) })}
+              onChange={e => setNewTicket({ ...newTicket, capacity: parseInt(e.target.value) })}
               className="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md text-white"
               required
             />
@@ -302,7 +290,7 @@ const RegistrationSettings = ({ event, onUpdate }) => {
             <label className="block text-sm font-medium text-gray-300">Description</label>
             <textarea
               value={newTicket.description}
-              onChange={(e) => setNewTicket({ ...newTicket, description: e.target.value })}
+              onChange={e => setNewTicket({ ...newTicket, description: e.target.value })}
               className="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md text-white"
               rows={3}
             />
@@ -311,9 +299,7 @@ const RegistrationSettings = ({ event, onUpdate }) => {
             <Button variant="secondary" onClick={() => setIsNewTicketModalOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleAddTicketType}>
-              Add Ticket Type
-            </Button>
+            <Button onClick={handleAddTicketType}>Add Ticket Type</Button>
           </div>
         </div>
       </Modal>
@@ -330,7 +316,7 @@ const RegistrationSettings = ({ event, onUpdate }) => {
             <input
               type="text"
               value={newQuestion.question}
-              onChange={(e) => setNewQuestion({ ...newQuestion, question: e.target.value })}
+              onChange={e => setNewQuestion({ ...newQuestion, question: e.target.value })}
               className="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md text-white"
               required
             />
@@ -339,7 +325,7 @@ const RegistrationSettings = ({ event, onUpdate }) => {
             <label className="block text-sm font-medium text-gray-300">Type</label>
             <select
               value={newQuestion.type}
-              onChange={(e) => setNewQuestion({ ...newQuestion, type: e.target.value })}
+              onChange={e => setNewQuestion({ ...newQuestion, type: e.target.value })}
               className="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md text-white"
             >
               <option value="text">Text</option>
@@ -351,7 +337,7 @@ const RegistrationSettings = ({ event, onUpdate }) => {
             <input
               type="checkbox"
               checked={newQuestion.required}
-              onChange={(e) => setNewQuestion({ ...newQuestion, required: e.target.checked })}
+              onChange={e => setNewQuestion({ ...newQuestion, required: e.target.checked })}
               className="h-4 w-4 bg-gray-700 border-gray-600 rounded"
             />
             <label className="ml-2 text-sm text-gray-300">Required</label>
@@ -365,7 +351,7 @@ const RegistrationSettings = ({ event, onUpdate }) => {
                     <input
                       type="text"
                       value={option}
-                      onChange={(e) => {
+                      onChange={e => {
                         const newOptions = [...newQuestion.options];
                         newOptions[index] = e.target.value;
                         setNewQuestion({ ...newQuestion, options: newOptions });
@@ -405,9 +391,7 @@ const RegistrationSettings = ({ event, onUpdate }) => {
             <Button variant="secondary" onClick={() => setIsNewQuestionModalOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleAddQuestion}>
-              Add Question
-            </Button>
+            <Button onClick={handleAddQuestion}>Add Question</Button>
           </div>
         </div>
       </Modal>
@@ -415,4 +399,4 @@ const RegistrationSettings = ({ event, onUpdate }) => {
   );
 };
 
-export default RegistrationSettings; 
+export default RegistrationSettings;

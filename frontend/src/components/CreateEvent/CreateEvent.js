@@ -25,7 +25,7 @@ const CreateEvent = () => {
     image: null
   });
 
-  const handleImageChange = (e) => {
+  const handleImageChange = e => {
     const file = e.target.files[0];
     if (file) {
       setEventData({ ...eventData, image: file });
@@ -52,16 +52,16 @@ const CreateEvent = () => {
           formData.append(key, eventData[key]);
         }
       });
-      
+
       // Combine date and time
       const dateTime = new Date(eventData.date + 'T' + eventData.time);
       formData.set('date', dateTime.toISOString());
 
       const token = localStorage.getItem('token');
-      
+
       const response = await axios.post('/api/events', formData, {
         headers: {
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`
         }
       });
 
@@ -90,8 +90,8 @@ const CreateEvent = () => {
       <div className="event-form">
         <div className="event-content">
           <div className="image-section">
-            <div 
-              className="image-upload" 
+            <div
+              className="image-upload"
               onClick={() => document.getElementById('image-input').click()}
               style={{
                 backgroundImage: imagePreview ? `url(${imagePreview})` : 'none',
@@ -108,12 +108,12 @@ const CreateEvent = () => {
               />
               {!imagePreview && <FaCamera className="upload-icon" />}
             </div>
-            
+
             <div className="theme-selector">
-              <select 
+              <select
                 className="theme-dropdown"
                 value={eventData.category}
-                onChange={(e) => setEventData({ ...eventData, category: e.target.value })}
+                onChange={e => setEventData({ ...eventData, category: e.target.value })}
               >
                 {CATEGORIES.map(category => (
                   <option key={category} value={category}>
@@ -130,7 +130,7 @@ const CreateEvent = () => {
               className="event-title"
               placeholder="Event Name"
               value={eventData.title}
-              onChange={(e) => setEventData({ ...eventData, title: e.target.value })}
+              onChange={e => setEventData({ ...eventData, title: e.target.value })}
             />
 
             <div className="time-section">
@@ -139,7 +139,7 @@ const CreateEvent = () => {
                 <input
                   type="date"
                   value={eventData.date}
-                  onChange={(e) => setEventData({ ...eventData, date: e.target.value })}
+                  onChange={e => setEventData({ ...eventData, date: e.target.value })}
                   required
                 />
               </div>
@@ -148,7 +148,7 @@ const CreateEvent = () => {
                 <input
                   type="time"
                   value={eventData.time}
-                  onChange={(e) => setEventData({ ...eventData, time: e.target.value })}
+                  onChange={e => setEventData({ ...eventData, time: e.target.value })}
                   required
                 />
               </div>
@@ -160,7 +160,7 @@ const CreateEvent = () => {
               <input
                 type="text"
                 value={eventData.location}
-                onChange={(e) => setEventData({ ...eventData, location: e.target.value })}
+                onChange={e => setEventData({ ...eventData, location: e.target.value })}
                 placeholder="Add location"
                 className="form-input"
                 required
@@ -170,7 +170,7 @@ const CreateEvent = () => {
                   <input
                     type="checkbox"
                     checked={eventData.isVirtual}
-                    onChange={(e) => setEventData({ ...eventData, isVirtual: e.target.checked })}
+                    onChange={e => setEventData({ ...eventData, isVirtual: e.target.checked })}
                   />
                   Virtual Event
                 </label>
@@ -178,7 +178,7 @@ const CreateEvent = () => {
                   <input
                     type="text"
                     value={eventData.streamUrl}
-                    onChange={(e) => setEventData({ ...eventData, streamUrl: e.target.value })}
+                    onChange={e => setEventData({ ...eventData, streamUrl: e.target.value })}
                     placeholder="Stream URL"
                     className="form-input"
                   />
@@ -191,7 +191,7 @@ const CreateEvent = () => {
               <input
                 type="number"
                 value={eventData.capacity}
-                onChange={(e) => setEventData({ ...eventData, capacity: parseInt(e.target.value) })}
+                onChange={e => setEventData({ ...eventData, capacity: parseInt(e.target.value) })}
                 placeholder="Number of attendees"
                 className="form-input"
                 min="1"
@@ -203,7 +203,7 @@ const CreateEvent = () => {
               <label>Description</label>
               <textarea
                 value={eventData.description}
-                onChange={(e) => setEventData({ ...eventData, description: e.target.value })}
+                onChange={e => setEventData({ ...eventData, description: e.target.value })}
                 placeholder="Add description"
                 className="form-input description"
                 required
@@ -212,9 +212,16 @@ const CreateEvent = () => {
 
             {error && <div className="error-message">{error}</div>}
 
-            <button 
-              className="create-event-btn" 
-              disabled={loading || !eventData.title || !eventData.date || !eventData.time || !eventData.location || !eventData.capacity}
+            <button
+              className="create-event-btn"
+              disabled={
+                loading ||
+                !eventData.title ||
+                !eventData.date ||
+                !eventData.time ||
+                !eventData.location ||
+                !eventData.capacity
+              }
               onClick={handleSubmit}
             >
               {loading ? 'Creating...' : 'Create Event'}

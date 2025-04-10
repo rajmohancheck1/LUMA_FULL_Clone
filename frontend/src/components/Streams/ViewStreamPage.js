@@ -5,7 +5,7 @@ import ChatBox from './ChatBox';
 import axios from 'axios';
 
 const ViewStreamPage = () => {
-  const getCookie = (name) => {
+  const getCookie = name => {
     const cookieArr = document.cookie.split(';');
     for (let cookie of cookieArr) {
       const [cookieName, cookieValue] = cookie.trim().split('=');
@@ -32,9 +32,8 @@ const ViewStreamPage = () => {
   const [audioEnabled, setAudioEnabled] = useState(false);
   const [isChatCollapsed, setIsChatCollapsed] = useState(true);
 
-
   // Handle volume change
-  const handleVolumeChange = (e) => {
+  const handleVolumeChange = e => {
     const newVolume = parseFloat(e.target.value);
     setVolume(newVolume);
     if (videoRef.current) {
@@ -89,14 +88,16 @@ const ViewStreamPage = () => {
     const connectToStream = async () => {
       try {
         // First get the stream details
-        const response = await axios.get(`http://localhost:5000/api/streams`);
+        const apiUrl =
+          process.env.NODE_ENV === 'production'
+            ? 'https://luwitch.onrender.com/api/streams'
+            : 'http://localhost:5000/api/streams';
+        const response = await axios.get(apiUrl);
         console.log('Available streams:', response.data.streams);
-        
+
         // Find active stream for this event
-        const stream = response.data.streams.find(s => 
-          s.streamerId === eventId && s.isLive
-        );
-        
+        const stream = response.data.streams.find(s => s.streamerId === eventId && s.isLive);
+
         if (!stream) {
           console.log('No active stream found for event:', eventId);
           setError('Stream not yet started');
@@ -113,16 +114,16 @@ const ViewStreamPage = () => {
           bundlePolicy: 'max-bundle',
           rtcpMuxPolicy: 'require'
         });
-        
+
         peerConnectionRef.current = peerConnection;
 
         // Update the ontrack handler
-        peerConnection.ontrack = (event) => {
+        peerConnection.ontrack = event => {
           console.log('Received stream track:', event);
           if (videoRef.current && event.streams[0]) {
             const stream = event.streams[0];
             videoRef.current.srcObject = stream;
-            
+
             // Ensure audio tracks are enabled
             stream.getAudioTracks().forEach(track => {
               track.enabled = true;
@@ -147,14 +148,14 @@ const ViewStreamPage = () => {
         peerConnection.oniceconnectionstatechange = () => {
           const state = peerConnection.iceConnectionState;
           console.log('ICE Connection State:', state);
-          
+
           if (state === 'failed' || state === 'disconnected') {
             console.log('Attempting to restart ICE');
             peerConnection.restartIce();
           }
         };
 
-        peerConnection.onicecandidate = (event) => {
+        peerConnection.onicecandidate = event => {
           if (event.candidate) {
             console.log('Sending ICE candidate to broadcaster');
             socketRef.current.emit('ice-candidate', {
@@ -166,7 +167,11 @@ const ViewStreamPage = () => {
         };
 
         // Connect to Socket.IO server
-        const socket = io('http://localhost:5000', {
+        const socketUrl =
+          process.env.NODE_ENV === 'production' ? window.location.origin : 'http://localhost:5000';
+
+        console.log('Connecting to socket server at:', socketUrl);
+        const socket = io(socketUrl, {
           transports: ['websocket'],
           reconnection: true,
           reconnectionAttempts: 5,
@@ -184,20 +189,20 @@ const ViewStreamPage = () => {
         socket.on('offer', async ({ offer, broadcasterId }) => {
           console.log('Received offer from broadcaster:', broadcasterId);
           socketRef.current.broadcasterId = broadcasterId;
-          
+
           try {
             const remoteDesc = new RTCSessionDescription(offer);
             await peerConnection.setRemoteDescription(remoteDesc);
             console.log('Remote description set');
-            
+
             const answer = await peerConnection.createAnswer({
               offerToReceiveAudio: true,
               offerToReceiveVideo: true
             });
-            
+
             await peerConnection.setLocalDescription(answer);
             console.log('Local description set');
-            
+
             socket.emit('answer', {
               answer,
               broadcasterId,
@@ -228,7 +233,7 @@ const ViewStreamPage = () => {
           if (socket.role === 'viewer') {
             setError('Connection lost. The stream may have ended.');
             setStreamEnded(true);
-            
+
             // Clean up
             if (videoRef.current) {
               videoRef.current.srcObject = null;
@@ -239,13 +244,13 @@ const ViewStreamPage = () => {
           }
         });
 
-        socket.on('connect_error', (error) => {
+        socket.on('connect_error', error => {
           console.error('Connection error:', error);
           setError('Connection error. Please try again.');
         });
 
         // Update chat messages to use streamId
-        socket.on('chat-message', (message) => {
+        socket.on('chat-message', message => {
           if (message.streamId === streamId) {
             setMessages(prev => [...prev, message]);
           }
@@ -255,18 +260,17 @@ const ViewStreamPage = () => {
           console.log('Stream has ended');
           setStreamEnded(true);
           setError('Stream has ended. The broadcaster has stopped streaming.');
-          
+
           // Clean up video stream
           if (videoRef.current) {
             videoRef.current.srcObject = null;
           }
-          
+
           // Close peer connection
           if (peerConnectionRef.current) {
             peerConnectionRef.current.close();
           }
         });
-
       } catch (error) {
         console.error('Error connecting to stream:', error);
         setError('Failed to connect to stream');
@@ -314,11 +318,20 @@ const ViewStreamPage = () => {
         socketRef.current.emit('end-stream');
       }
 
-      await axios.post(`http://localhost:5000/api/events/${eventId}/stop-streaming`, {}, {
-        headers: {
-          Authorization: `Bearer ${token}`
+      const apiBaseUrl =
+        process.env.NODE_ENV === 'production'
+          ? 'https://luwitch.onrender.com'
+          : 'http://localhost:5000';
+
+      await axios.post(
+        `${apiBaseUrl}/api/events/${eventId}/stop-streaming`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         }
-      });
+      );
 
       console.log('Stream ended and event updated');
       setStreamEnded(true);
@@ -331,21 +344,27 @@ const ViewStreamPage = () => {
   return (
     <div style={{ textAlign: 'center', padding: '20px' }}>
       <h2>Viewing Stream</h2>
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center',
-        alignItems: 'flex-start',
-        gap: '20px',
-        maxWidth: '1600px',
-        margin: '0 auto'
-      }}>
-         <div style={{ flex: '1', marginBottom: '20px',
-          transition:"width 0.3s ease",
-          width: isChatCollapsed? '100%':"calc(100%-320px)"
-         }}>
-          <div 
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'flex-start',
+          gap: '20px',
+          maxWidth: '1600px',
+          margin: '0 auto'
+        }}
+      >
+        <div
+          style={{
+            flex: '1',
+            marginBottom: '20px',
+            transition: 'width 0.3s ease',
+            width: isChatCollapsed ? '100%' : 'calc(100%-320px)'
+          }}
+        >
+          <div
             ref={videoContainerRef}
-            style={{ 
+            style={{
               position: 'relative',
               width: '100%',
               backgroundColor: '#000',
@@ -353,219 +372,231 @@ const ViewStreamPage = () => {
               overflow: 'hidden'
             }}
           >
-          {error === 'Stream not yet started' ? (
-            <div style={{
-              width: '100%',
-              minHeight: '400px',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center',
-              backgroundColor: '#1a1a1a',
-              color: 'white',
-              borderRadius: '8px',
-              padding: '40px',
-              boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
-            }}>
-              <h2 style={{ 
-                fontSize: '28px', 
-                marginBottom: '20px',
-                color: '#4444ff'
-              }}>
-                Stream Not Started
-              </h2>
-              <p style={{ 
-                fontSize: '18px', 
-                marginBottom: '30px',
-                color: '#cccccc'
-              }}>
-                The broadcaster hasn't started streaming yet. Please check back later.
-              </p>
-              <button 
-                onClick={() => navigate('/browse')}
+            {error === 'Stream not yet started' ? (
+              <div
                 style={{
-                  padding: '12px 24px',
-                  backgroundColor: '#4444ff',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  fontSize: '16px',
-                  transition: 'background-color 0.2s',
-                  marginTop: '20px'
-                }}
-                onMouseOver={(e) => e.target.style.backgroundColor = '#3333cc'}
-                onMouseOut={(e) => e.target.style.backgroundColor = '#4444ff'}
-              >
-                Return to Browse
-              </button>
-            </div>
-          ) : streamEnded ? (
-            <div style={{
-              width: '100%',
-              minHeight: '400px',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center',
-              backgroundColor: '#1a1a1a',
-              color: 'white',
-              borderRadius: '8px',
-              padding: '40px',
-              boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
-            }}>
-              <h2 style={{ 
-                fontSize: '28px', 
-                marginBottom: '20px',
-                color: '#ff4444'
-              }}>
-                Stream Has Ended
-              </h2>
-              <p style={{ 
-                fontSize: '18px', 
-                marginBottom: '30px',
-                color: '#cccccc'
-              }}>
-                The broadcaster has ended this stream session.
-              </p>
-              <button 
-                onClick={() => navigate('/browse')}
-                style={{
-                  padding: '12px 24px',
-                  backgroundColor: '#4444ff',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  fontSize: '16px',
-                  transition: 'background-color 0.2s',
-                  marginTop: '20px'
-                }}
-                onMouseOver={(e) => e.target.style.backgroundColor = '#3333cc'}
-                onMouseOut={(e) => e.target.style.backgroundColor = '#4444ff'}
-              >
-                Return to Browse
-              </button>
-            </div>
-          ) : (
-            <div 
-              ref={videoContainerRef}
-              style={{ 
-                position: 'relative',
-                width: '100%',
-                backgroundColor: '#000',
-                borderRadius: '8px',
-                overflow: 'hidden',
-                ...(isFullscreen && {
-                  height: '100vh',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                })
-              }}
-            >
-              <video 
-                ref={videoRef} 
-                autoPlay 
-                playsInline 
-                style={{ 
                   width: '100%',
-                  height: isFullscreen ? '100vh' : '75vh',
-                  maxHeight: isFullscreen ? 'none' : '75vh',
-                  backgroundColor: '#000',
-                  objectFit: isFullscreen ? 'contain' : 'cover'
+                  minHeight: '400px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: '#1a1a1a',
+                  color: 'white',
+                  borderRadius: '8px',
+                  padding: '40px',
+                  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
                 }}
-                onLoadedMetadata={() => {
-                  if (videoRef.current) {
-                    videoRef.current.muted = false;
-                    videoRef.current.volume = 1;
-                    videoRef.current.play().catch(console.error);
-                  }
-                }}
-                onClick={() => {
-                  if (videoRef.current) {
-                    videoRef.current.muted = false;
-                    videoRef.current.volume = 1;
-                    videoRef.current.play().catch(console.error);
-                  }
-                }}
-              />
-              <div style={{
-                position: 'absolute',
-                bottom: 0,
-                left: 0,
-                right: 0,
-                padding: '20px',
-                background: 'linear-gradient(transparent, rgba(0,0,0,0.7))',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '15px',
-                opacity: '0',
-                transition: 'opacity 0.3s',
-                zIndex: 1000
-              }}
-              onMouseEnter={e => e.currentTarget.style.opacity = '1'}
-              onMouseLeave={e => e.currentTarget.style.opacity = '0'}
               >
-                {/* Volume Control */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <h2
+                  style={{
+                    fontSize: '28px',
+                    marginBottom: '20px',
+                    color: '#4444ff'
+                  }}
+                >
+                  Stream Not Started
+                </h2>
+                <p
+                  style={{
+                    fontSize: '18px',
+                    marginBottom: '30px',
+                    color: '#cccccc'
+                  }}
+                >
+                  The broadcaster hasn't started streaming yet. Please check back later.
+                </p>
+                <button
+                  onClick={() => navigate('/browse')}
+                  style={{
+                    padding: '12px 24px',
+                    backgroundColor: '#4444ff',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    fontSize: '16px',
+                    transition: 'background-color 0.2s',
+                    marginTop: '20px'
+                  }}
+                  onMouseOver={e => (e.target.style.backgroundColor = '#3333cc')}
+                  onMouseOut={e => (e.target.style.backgroundColor = '#4444ff')}
+                >
+                  Return to Browse
+                </button>
+              </div>
+            ) : streamEnded ? (
+              <div
+                style={{
+                  width: '100%',
+                  minHeight: '400px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: '#1a1a1a',
+                  color: 'white',
+                  borderRadius: '8px',
+                  padding: '40px',
+                  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+                }}
+              >
+                <h2
+                  style={{
+                    fontSize: '28px',
+                    marginBottom: '20px',
+                    color: '#ff4444'
+                  }}
+                >
+                  Stream Has Ended
+                </h2>
+                <p
+                  style={{
+                    fontSize: '18px',
+                    marginBottom: '30px',
+                    color: '#cccccc'
+                  }}
+                >
+                  The broadcaster has ended this stream session.
+                </p>
+                <button
+                  onClick={() => navigate('/browse')}
+                  style={{
+                    padding: '12px 24px',
+                    backgroundColor: '#4444ff',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    fontSize: '16px',
+                    transition: 'background-color 0.2s',
+                    marginTop: '20px'
+                  }}
+                  onMouseOver={e => (e.target.style.backgroundColor = '#3333cc')}
+                  onMouseOut={e => (e.target.style.backgroundColor = '#4444ff')}
+                >
+                  Return to Browse
+                </button>
+              </div>
+            ) : (
+              <div
+                ref={videoContainerRef}
+                style={{
+                  position: 'relative',
+                  width: '100%',
+                  backgroundColor: '#000',
+                  borderRadius: '8px',
+                  overflow: 'hidden',
+                  ...(isFullscreen && {
+                    height: '100vh',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  })
+                }}
+              >
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  style={{
+                    width: '100%',
+                    height: isFullscreen ? '100vh' : '75vh',
+                    maxHeight: isFullscreen ? 'none' : '75vh',
+                    backgroundColor: '#000',
+                    objectFit: isFullscreen ? 'contain' : 'cover'
+                  }}
+                  onLoadedMetadata={() => {
+                    if (videoRef.current) {
+                      videoRef.current.muted = false;
+                      videoRef.current.volume = 1;
+                      videoRef.current.play().catch(console.error);
+                    }
+                  }}
+                  onClick={() => {
+                    if (videoRef.current) {
+                      videoRef.current.muted = false;
+                      videoRef.current.volume = 1;
+                      videoRef.current.play().catch(console.error);
+                    }
+                  }}
+                />
+                <div
+                  style={{
+                    position: 'absolute',
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    padding: '20px',
+                    background: 'linear-gradient(transparent, rgba(0,0,0,0.7))',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '15px',
+                    opacity: '0',
+                    transition: 'opacity 0.3s',
+                    zIndex: 1000
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
+                  onMouseLeave={e => (e.currentTarget.style.opacity = '0')}
+                >
+                  {/* Volume Control */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <button
+                      onClick={handleMuteToggle}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        color: 'white',
+                        cursor: 'pointer',
+                        padding: '5px'
+                      }}
+                    >
+                      {isMuted ? '🔇' : '🔊'}
+                    </button>
+                    <input
+                      type="range"
+                      min="0"
+                      max="1"
+                      step="0.1"
+                      value={volume}
+                      onChange={handleVolumeChange}
+                      style={{
+                        width: '100px',
+                        accentColor: '#4444ff'
+                      }}
+                    />
+                  </div>
+
+                  {/* Fullscreen Button */}
                   <button
-                    onClick={handleMuteToggle}
+                    onClick={handleFullscreen}
                     style={{
                       background: 'none',
                       border: 'none',
                       color: 'white',
                       cursor: 'pointer',
-                      padding: '5px'
+                      padding: '5px',
+                      marginLeft: 'auto'
                     }}
                   >
-                    {isMuted ? '🔇' : '🔊'}
+                    {isFullscreen ? '⤓' : '⤢'}
                   </button>
-                  <input
-                    type="range"
-                    min="0"
-                    max="1"
-                    step="0.1"
-                    value={volume}
-                    onChange={handleVolumeChange}
-                    style={{
-                      width: '100px',
-                      accentColor: '#4444ff'
-                    }}
-                  />
                 </div>
-
-                
-               
-
-                {/* Fullscreen Button */}
-                <button
-                  onClick={handleFullscreen}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: 'white',
-                    cursor: 'pointer',
-                    padding: '5px',
-                    marginLeft: 'auto'
-                  }}
-                >
-                  {isFullscreen ? '⤓' : '⤢'}
-                </button>
               </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
         </div>
         {socketRef.current && (
-           <div style={{
-            position: 'relative', // Changed to relative
-            height: '80vh',
-            marginLeft: '10px', // Add space between video and chat/icon
-            transition: 'all 0.3s ease',
-          }}>
-            <ChatBox 
-              socket={socketRef.current} 
+          <div
+            style={{
+              position: 'relative', // Changed to relative
+              height: '80vh',
+              marginLeft: '10px', // Add space between video and chat/icon
+              transition: 'all 0.3s ease'
+            }}
+          >
+            <ChatBox
+              socket={socketRef.current}
               eventId={eventId}
               isBroadcaster={false}
               onCollapseChange={setIsChatCollapsed}

@@ -25,10 +25,16 @@ const Navbar = () => {
               </Link>
               {user && (
                 <>
-                  <Link to="/dashboard" className="hover:text-blue-200 transition-colors font-medium">
+                  <Link
+                    to="/dashboard"
+                    className="hover:text-blue-200 transition-colors font-medium"
+                  >
                     Dashboard
                   </Link>
-                  <Link to="/calender" className="hover:text-blue-200 transition-colors font-medium">
+                  <Link
+                    to="/calender"
+                    className="hover:text-blue-200 transition-colors font-medium"
+                  >
                     Calendar
                   </Link>
                 </>
@@ -51,8 +57,8 @@ const Navbar = () => {
                 <Link to="/login" className="hover:text-blue-200 transition-colors font-medium">
                   Login
                 </Link>
-                <Link 
-                  to="/register" 
+                <Link
+                  to="/register"
                   className="bg-white text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-50 transition-colors font-medium shadow-md"
                 >
                   Register

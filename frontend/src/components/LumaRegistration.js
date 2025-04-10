@@ -20,7 +20,7 @@ const Switch = ({ checked, onChange }) => (
 // Custom Modal Component
 const Modal = ({ open, onClose, title, children, footer }) => {
   if (!open) return null;
-  
+
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
       <div className="fixed inset-0 bg-black/70" onClick={onClose} />
@@ -46,7 +46,7 @@ const Button = ({ children, variant = 'primary', className = '', ...props }) => 
   const variants = {
     primary: 'bg-blue-600 text-white hover:bg-blue-700',
     secondary: 'bg-gray-700 border border-gray-600 text-white hover:bg-gray-600',
-    danger: 'bg-red-600 text-white hover:bg-red-700',
+    danger: 'bg-red-600 text-white hover:bg-red-700'
   };
 
   return (
@@ -59,9 +59,11 @@ const Button = ({ children, variant = 'primary', className = '', ...props }) => 
 // Toast Notification Component
 const Toast = ({ message, type = 'success' }) => (
   <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50">
-    <div className={`px-6 py-3 rounded-lg shadow-lg ${
-      type === 'success' ? 'bg-green-500' : 'bg-red-500'
-    } text-white flex items-center gap-2`}>
+    <div
+      className={`px-6 py-3 rounded-lg shadow-lg ${
+        type === 'success' ? 'bg-green-500' : 'bg-red-500'
+      } text-white flex items-center gap-2`}
+    >
       <Check className="w-4 h-4" />
       {message}
     </div>
@@ -74,7 +76,9 @@ const TicketType = ({ ticket, onDelete }) => (
     <div className="flex justify-between items-center">
       <div>
         <span className="font-medium">{ticket.name}</span>
-        <span className="text-gray-500 ml-2">{ticket.price === 0 ? 'Free' : `$${ticket.price}`}</span>
+        <span className="text-gray-500 ml-2">
+          {ticket.price === 0 ? 'Free' : `$${ticket.price}`}
+        </span>
       </div>
       <div className="flex items-center gap-4">
         <span className="text-gray-500">{ticket.registered} registered</span>
@@ -106,18 +110,16 @@ const Question = ({ question, onToggle, onDelete }) => (
 
 const EventRegistration = () => {
   // State management
-  const [tickets, setTickets] = useState([
-    { id: 1, name: 'Standard', price: 0, registered: 1 }
-  ]);
+  const [tickets, setTickets] = useState([{ id: 1, name: 'Standard', price: 0, registered: 1 }]);
   const [questions, setQuestions] = useState([
     { id: 1, label: 'Name', type: 'text', required: true, enabled: true },
     { id: 2, label: 'Email', type: 'email', required: true, enabled: true },
-    { id: 3, label: 'Phone', type: 'tel', required: false, enabled: false },
+    { id: 3, label: 'Phone', type: 'tel', required: false, enabled: false }
   ]);
   const [emailContent, setEmailContent] = useState('');
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
-  
+
   // Modals state
   const [modals, setModals] = useState({
     registration: false,
@@ -125,7 +127,7 @@ const EventRegistration = () => {
     group: false,
     email: false,
     newTicket: false,
-    newQuestion: false,
+    newQuestion: false
   });
 
   // Settings state
@@ -133,46 +135,44 @@ const EventRegistration = () => {
     isRegistrationOpen: true,
     capacity: 50,
     allowWaitlist: false,
-    allowGroupRegistration: false,
+    allowGroupRegistration: false
   });
 
   // Toast helper
-  const showTemporaryToast = (message) => {
+  const showTemporaryToast = message => {
     setToastMessage(message);
     setShowToast(true);
     setTimeout(() => setShowToast(false), 3000);
   };
 
   // Ticket handlers
-  const addTicket = (ticketData) => {
+  const addTicket = ticketData => {
     const newTicket = {
       id: tickets.length + 1,
       ...ticketData,
-      registered: 0,
+      registered: 0
     };
     setTickets([...tickets, newTicket]);
     showTemporaryToast('New ticket type added');
   };
 
   // Question handlers
-  const addQuestion = (questionData) => {
+  const addQuestion = questionData => {
     const newQuestion = {
       id: questions.length + 1,
       ...questionData,
-      enabled: true,
+      enabled: true
     };
     setQuestions([...questions, newQuestion]);
     showTemporaryToast('New question added');
   };
 
-  const toggleQuestion = (id) => {
-    setQuestions(questions.map(q => 
-      q.id === id ? { ...q, enabled: !q.enabled } : q
-    ));
+  const toggleQuestion = id => {
+    setQuestions(questions.map(q => (q.id === id ? { ...q, enabled: !q.enabled } : q)));
   };
 
   // Email handlers
-  const updateEmail = (content) => {
+  const updateEmail = content => {
     setEmailContent(content);
     showTemporaryToast('Email template updated');
   };
@@ -187,9 +187,11 @@ const EventRegistration = () => {
             variant="secondary"
             className="flex items-center gap-2"
           >
-            <span className={`w-2 h-2 rounded-full ${
-              settings.isRegistrationOpen ? 'bg-green-500' : 'bg-red-500'
-            }`} />
+            <span
+              className={`w-2 h-2 rounded-full ${
+                settings.isRegistrationOpen ? 'bg-green-500' : 'bg-red-500'
+              }`}
+            />
             Registration
           </Button>
 
@@ -216,10 +218,7 @@ const EventRegistration = () => {
         <div className="mb-8">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold">Tickets</h2>
-            <Button
-              variant="secondary"
-              onClick={() => setModals({ ...modals, newTicket: true })}
-            >
+            <Button variant="secondary" onClick={() => setModals({ ...modals, newTicket: true })}>
               <Plus className="w-4 h-4 mr-2" /> New Ticket Type
             </Button>
           </div>
@@ -227,7 +226,7 @@ const EventRegistration = () => {
             <TicketType
               key={ticket.id}
               ticket={ticket}
-              onDelete={(id) => {
+              onDelete={id => {
                 setTickets(tickets.filter(t => t.id !== id));
                 showTemporaryToast('Ticket type removed');
               }}
@@ -259,7 +258,7 @@ const EventRegistration = () => {
               key={question.id}
               question={question}
               onToggle={toggleQuestion}
-              onDelete={(id) => {
+              onDelete={id => {
                 setQuestions(questions.filter(q => q.id !== id));
                 showTemporaryToast('Question removed');
               }}
@@ -297,7 +296,7 @@ const EventRegistration = () => {
             <span>Accept Registration</span>
             <Switch
               checked={settings.isRegistrationOpen}
-              onChange={(checked) => setSettings({ ...settings, isRegistrationOpen: checked })}
+              onChange={checked => setSettings({ ...settings, isRegistrationOpen: checked })}
             />
           </div>
         </Modal>
@@ -319,7 +318,7 @@ const EventRegistration = () => {
                 onClick={() => {
                   addTicket({
                     name: 'VIP Ticket',
-                    price: 99,
+                    price: 99
                   });
                   setModals({ ...modals, newTicket: false });
                 }}
@@ -340,11 +339,7 @@ const EventRegistration = () => {
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Price</label>
-              <input
-                type="number"
-                className="w-full p-2 border rounded-lg"
-                placeholder="0"
-              />
+              <input type="number" className="w-full p-2 border rounded-lg" placeholder="0" />
             </div>
           </div>
         </Modal>
@@ -356,10 +351,7 @@ const EventRegistration = () => {
           title="Customize Registration Email"
           footer={
             <div className="flex justify-end gap-2">
-              <Button
-                variant="secondary"
-                onClick={() => setModals({ ...modals, email: false })}
-              >
+              <Button variant="secondary" onClick={() => setModals({ ...modals, email: false })}>
                 Cancel
               </Button>
               <Button
@@ -377,152 +369,152 @@ const EventRegistration = () => {
             className="w-full p-4 border rounded-lg min-h-[200px]"
             placeholder="Enter your custom email message..."
             value={emailContent}
-            onChange={(e) => setEmailContent(e.target.value)}
+            onChange={e => setEmailContent(e.target.value)}
           />
         </Modal>
-     
-  {/* New Question Modal */}
-  <Modal
-    open={modals.newQuestion}
-    onClose={() => setModals({ ...modals, newQuestion: false })}
-    title="Add Question"
-    footer={
-      <div className="flex justify-end gap-2">
-        <Button
-          variant="secondary"
-          onClick={() => setModals({ ...modals, newQuestion: false })}
+
+        {/* New Question Modal */}
+        <Modal
+          open={modals.newQuestion}
+          onClose={() => setModals({ ...modals, newQuestion: false })}
+          title="Add Question"
+          footer={
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="secondary"
+                onClick={() => setModals({ ...modals, newQuestion: false })}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={() => {
+                  addQuestion({
+                    label: 'Company Name',
+                    type: 'text',
+                    required: false
+                  });
+                  setModals({ ...modals, newQuestion: false });
+                }}
+              >
+                Add Question
+              </Button>
+            </div>
+          }
         >
-          Cancel
-        </Button>
-        <Button
-          onClick={() => {
-            addQuestion({
-              label: 'Company Name',
-              type: 'text',
-              required: false,
-            });
-            setModals({ ...modals, newQuestion: false });
-          }}
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">Question Type</label>
+              <select className="w-full p-2 border rounded-lg">
+                <option>Text</option>
+                <option>Options</option>
+                <option>Social Profile</option>
+                <option>Company</option>
+                <option>Checkbox</option>
+                <option>Terms</option>
+                <option>Website</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Question Label</label>
+              <input
+                type="text"
+                className="w-full p-2 border rounded-lg"
+                placeholder="Enter question label"
+              />
+            </div>
+            <div className="flex items-center justify-between">
+              <span>Required</span>
+              <Switch checked={false} onChange={() => {}} />
+            </div>
+          </div>
+        </Modal>
+
+        {/* Capacity Modal */}
+        <Modal
+          open={modals.capacity}
+          onClose={() => setModals({ ...modals, capacity: false })}
+          title="Event Capacity"
+          footer={
+            <div className="flex justify-end gap-2">
+              <Button variant="secondary" onClick={() => setModals({ ...modals, capacity: false })}>
+                Remove Limit
+              </Button>
+              <Button
+                onClick={() => {
+                  setSettings({ ...settings, capacity: 50 });
+                  setModals({ ...modals, capacity: false });
+                  showTemporaryToast('Capacity updated');
+                }}
+              >
+                Set Limit
+              </Button>
+            </div>
+          }
         >
-          Add Question
-        </Button>
-      </div>
-    }
-  >
-    <div className="space-y-4">
-      <div>
-        <label className="block text-sm font-medium mb-1">Question Type</label>
-        <select className="w-full p-2 border rounded-lg">
-          <option>Text</option>
-          <option>Options</option>
-          <option>Social Profile</option>
-          <option>Company</option>
-          <option>Checkbox</option>
-          <option>Terms</option>
-          <option>Website</option>
-        </select>
-      </div>
-      <div>
-        <label className="block text-sm font-medium mb-1">Question Label</label>
-        <input
-          type="text"
-          className="w-full p-2 border rounded-lg"
-          placeholder="Enter question label"
-        />
-      </div>
-      <div className="flex items-center justify-between">
-        <span>Required</span>
-        <Switch checked={false} onChange={() => {}} />
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">Capacity</label>
+              <input
+                type="number"
+                className="w-full p-2 border rounded-lg"
+                value={settings.capacity}
+                onChange={e => setSettings({ ...settings, capacity: parseInt(e.target.value) })}
+              />
+            </div>
+            <div className="flex items-center justify-between">
+              <span>Over-Capacity Waitlist</span>
+              <Switch
+                checked={settings.allowWaitlist}
+                onChange={checked => setSettings({ ...settings, allowWaitlist: checked })}
+              />
+            </div>
+          </div>
+        </Modal>
+
+        {/* Group Registration Modal */}
+        <Modal
+          open={modals.group}
+          onClose={() => setModals({ ...modals, group: false })}
+          title="Group Registration"
+          footer={
+            <div className="flex justify-end">
+              <Button
+                onClick={() => {
+                  setSettings({
+                    ...settings,
+                    allowGroupRegistration: !settings.allowGroupRegistration
+                  });
+                  setModals({ ...modals, group: false });
+                  showTemporaryToast('Group registration settings updated');
+                }}
+              >
+                Confirm
+              </Button>
+            </div>
+          }
+        >
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <span>Allow Group Registration</span>
+              <Switch
+                checked={settings.allowGroupRegistration}
+                onChange={checked => setSettings({ ...settings, allowGroupRegistration: checked })}
+              />
+            </div>
+            <p className="text-sm text-gray-600">
+              If turned on, guests will be able to get multiple tickets at once.
+              <a href="#" className="text-blue-500 ml-1">
+                Learn more about group registration ↗
+              </a>
+            </p>
+          </div>
+        </Modal>
+
+        {/* Toast Notification */}
+        {showToast && <Toast message={toastMessage} />}
       </div>
     </div>
-  </Modal>
-
-  {/* Capacity Modal */}
-  <Modal
-    open={modals.capacity}
-    onClose={() => setModals({ ...modals, capacity: false })}
-    title="Event Capacity"
-    footer={
-      <div className="flex justify-end gap-2">
-        <Button
-          variant="secondary"
-          onClick={() => setModals({ ...modals, capacity: false })}
-        >
-          Remove Limit
-        </Button>
-        <Button
-          onClick={() => {
-            setSettings({ ...settings, capacity: 50 });
-            setModals({ ...modals, capacity: false });
-            showTemporaryToast('Capacity updated');
-          }}
-        >
-          Set Limit
-        </Button>
-      </div>
-    }
-  >
-    <div className="space-y-4">
-      <div>
-        <label className="block text-sm font-medium mb-1">Capacity</label>
-        <input
-          type="number"
-          className="w-full p-2 border rounded-lg"
-          value={settings.capacity}
-          onChange={(e) => setSettings({ ...settings, capacity: parseInt(e.target.value) })}
-        />
-      </div>
-      <div className="flex items-center justify-between">
-        <span>Over-Capacity Waitlist</span>
-        <Switch
-          checked={settings.allowWaitlist}
-          onChange={(checked) => setSettings({ ...settings, allowWaitlist: checked })}
-        />
-      </div>
-    </div>
-  </Modal>
-
-  {/* Group Registration Modal */}
-  <Modal
-    open={modals.group}
-    onClose={() => setModals({ ...modals, group: false })}
-    title="Group Registration"
-    footer={
-      <div className="flex justify-end">
-        <Button
-          onClick={() => {
-            setSettings({ ...settings, allowGroupRegistration: !settings.allowGroupRegistration });
-            setModals({ ...modals, group: false });
-            showTemporaryToast('Group registration settings updated');
-          }}
-        >
-          Confirm
-        </Button>
-      </div>
-    }
-  >
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <span>Allow Group Registration</span>
-        <Switch
-          checked={settings.allowGroupRegistration}
-          onChange={(checked) => setSettings({ ...settings, allowGroupRegistration: checked })}
-        />
-      </div>
-      <p className="text-sm text-gray-600">
-        If turned on, guests will be able to get multiple tickets at once.
-        <a href="#" className="text-blue-500 ml-1">Learn more about group registration ↗</a>
-      </p>
-    </div>
-  </Modal>
-
-  {/* Toast Notification */}
-  {showToast && (
-    <Toast message={toastMessage} />
-  )}
-</div>
-</div>
-);
+  );
 };
 
 export default EventRegistration;

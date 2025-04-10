@@ -10,7 +10,9 @@ const EventTable = ({ events, onEventDeleted }) => {
   const [deletingEventId, setDeletingEventId] = useState(null);
 
   const handleDelete = async eventId => {
-    if (!window.confirm('Are you sure you want to delete this event? This action cannot be undone.')) {
+    if (
+      !window.confirm('Are you sure you want to delete this event? This action cannot be undone.')
+    ) {
       return;
     }
 
@@ -22,9 +24,10 @@ const EventTable = ({ events, onEventDeleted }) => {
         onEventDeleted(eventId);
       }
     } catch (error) {
-      const errorMessage = error.response?.data?.message 
-        || error.response?.data?.error 
-        || 'Failed to delete event. Please try again.';
+      const errorMessage =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        'Failed to delete event. Please try again.';
       showNotification(errorMessage, 'error');
       console.error('Failed to delete event:', error);
     } finally {
@@ -32,14 +35,14 @@ const EventTable = ({ events, onEventDeleted }) => {
     }
   };
 
-  const handleView = (eventId) => {
+  const handleView = eventId => {
     navigate(`/events/${eventId}/manage`);
   };
 
   if (!events?.length) {
     return <div className="text-center py-8 text-gray-400">No events found</div>;
   }
- 
+
   return (
     <div className="overflow-x-auto rounded-lg border border-gray-700">
       <table className="min-w-full divide-y divide-gray-700">
@@ -70,9 +73,7 @@ const EventTable = ({ events, onEventDeleted }) => {
                 <div className="text-sm text-gray-400">{event.category}</div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
-                <div className="text-sm text-gray-200">
-                  {format(new Date(event.date), 'PPP')}
-                </div>
+                <div className="text-sm text-gray-200">{format(new Date(event.date), 'PPP')}</div>
                 <div className="text-sm text-gray-400">{event.time}</div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
@@ -119,11 +120,11 @@ const EventTable = ({ events, onEventDeleted }) => {
                   {deletingEventId === event._id ? 'Deleting...' : 'Delete'}
                 </button>
                 <button
-                    onClick={() => navigate(`/create-stream/${event._id}`)}
-                    className="icon-btn"
-                  >
-                    Start Stream
-                  </button>
+                  onClick={() => navigate(`/create-stream/${event._id}`)}
+                  className="icon-btn"
+                >
+                  Start Stream
+                </button>
               </td>
             </tr>
           ))}

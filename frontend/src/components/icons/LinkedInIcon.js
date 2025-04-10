@@ -5,4 +5,4 @@ const LinkedInIcon = ({ className }) => (
 );
 
 export { LinkedInIcon };
-export default LinkedInIcon; 
+export default LinkedInIcon;

@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { Tab } from '@headlessui/react';
-import { 
-  ChartBarIcon, 
-  UsersIcon, 
-  CogIcon, 
+import {
+  ChartBarIcon,
+  UsersIcon,
+  CogIcon,
   EnvelopeIcon,
-  DocumentTextIcon 
+  DocumentTextIcon
 } from '@heroicons/react/24/outline';
 
 const EventManagementLayout = ({ event, children }) => {
@@ -14,7 +14,7 @@ const EventManagementLayout = ({ event, children }) => {
     { name: 'Insights', icon: ChartBarIcon },
     { name: 'Guest List', icon: UsersIcon },
     { name: 'Email Blast', icon: EnvelopeIcon },
-    { name: 'Settings', icon: CogIcon },
+    { name: 'Settings', icon: CogIcon }
   ];
 
   return (
@@ -28,14 +28,15 @@ const EventManagementLayout = ({ event, children }) => {
 
           <Tab.Group>
             <Tab.List className="flex space-x-1 rounded-xl bg-gray-800 p-1">
-              {tabs.map((tab) => (
+              {tabs.map(tab => (
                 <Tab
                   key={tab.name}
                   className={({ selected }) =>
                     `w-full rounded-lg py-2.5 text-sm font-medium leading-5
-                     ${selected 
-                       ? 'bg-blue-600 text-white shadow'
-                       : 'text-gray-400 hover:bg-gray-700 hover:text-white'
+                     ${
+                       selected
+                         ? 'bg-blue-600 text-white shadow'
+                         : 'text-gray-400 hover:bg-gray-700 hover:text-white'
                      }
                      flex items-center justify-center space-x-2`
                   }
@@ -46,9 +47,7 @@ const EventManagementLayout = ({ event, children }) => {
               ))}
             </Tab.List>
 
-            <Tab.Panels className="mt-6">
-              {children}
-            </Tab.Panels>
+            <Tab.Panels className="mt-6">{children}</Tab.Panels>
           </Tab.Group>
         </div>
       </div>
@@ -56,4 +55,4 @@ const EventManagementLayout = ({ event, children }) => {
   );
 };
 
-export default EventManagementLayout; 
+export default EventManagementLayout;

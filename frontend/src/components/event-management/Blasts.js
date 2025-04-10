@@ -3,12 +3,7 @@ import { useNotification } from '../../context/NotificationContext';
 import Modal from '../Modal';
 import Button from '../Button';
 import api from '../../utils/api';
-import {
-  EnvelopeIcon,
-  ClockIcon,
-  BellIcon,
-  StarIcon,
-} from '@heroicons/react/24/outline';
+import { EnvelopeIcon, ClockIcon, BellIcon, StarIcon } from '@heroicons/react/24/outline';
 
 const Blasts = ({ eventId }) => {
   const [message, setMessage] = useState('');
@@ -16,7 +11,7 @@ const Blasts = ({ eventId }) => {
   const [isReminderModalOpen, setIsReminderModalOpen] = useState(false);
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
   const { showNotification } = useNotification();
-  
+
   const [reminderSettings, setReminderSettings] = useState({
     enabled: true,
     schedule: [
@@ -34,7 +29,7 @@ const Blasts = ({ eventId }) => {
   const [advancedData, setAdvancedData] = useState({
     recipients: 'going',
     subject: '',
-    message: '',
+    message: ''
   });
 
   // Handle Event Reminders
@@ -63,7 +58,7 @@ const Blasts = ({ eventId }) => {
   const handleSendBlast = async () => {
     try {
       await api.post(`/api/events/${eventId}/blasts`, {
-        message,
+        message
       });
       showNotification('Blast sent successfully', 'success');
       setMessage('');
@@ -81,7 +76,7 @@ const Blasts = ({ eventId }) => {
       setAdvancedData({
         recipients: 'going',
         subject: '',
-        message: '',
+        message: ''
       });
     } catch (error) {
       showNotification('Failed to send blast', 'error');
@@ -101,7 +96,7 @@ const Blasts = ({ eventId }) => {
           <div className="flex-grow">
             <textarea
               value={message}
-              onChange={(e) => setMessage(e.target.value)}
+              onChange={e => setMessage(e.target.value)}
               placeholder="Send a blast to your guests..."
               className="w-full bg-gray-700 border border-gray-600 rounded-lg p-3 text-white placeholder-gray-400 min-h-[100px]"
             />
@@ -140,7 +135,7 @@ const Blasts = ({ eventId }) => {
       {/* System Messages */}
       <div className="space-y-4">
         <h3 className="text-lg font-medium text-white">System Messages</h3>
-        
+
         <div className="bg-gray-800 rounded-lg p-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-3">
@@ -152,10 +147,7 @@ const Blasts = ({ eventId }) => {
                 </p>
               </div>
             </div>
-            <Button 
-              variant="secondary"
-              onClick={() => setIsReminderModalOpen(true)}
-            >
+            <Button variant="secondary" onClick={() => setIsReminderModalOpen(true)}>
               Manage
             </Button>
           </div>
@@ -172,10 +164,7 @@ const Blasts = ({ eventId }) => {
                 </p>
               </div>
             </div>
-            <Button 
-              variant="secondary"
-              onClick={() => setIsFeedbackModalOpen(true)}
-            >
+            <Button variant="secondary" onClick={() => setIsFeedbackModalOpen(true)}>
               Schedule
             </Button>
           </div>
@@ -191,8 +180,8 @@ const Blasts = ({ eventId }) => {
         <div className="space-y-4">
           <div>
             <p className="text-sm text-gray-300 mb-4">
-              Guests will receive the blast via email, SMS or in-app notification. 
-              It will also be shown on the event page.
+              Guests will receive the blast via email, SMS or in-app notification. It will also be
+              shown on the event page.
             </p>
           </div>
 
@@ -200,7 +189,7 @@ const Blasts = ({ eventId }) => {
             <label className="block text-sm font-medium text-gray-300 mb-2">Recipients</label>
             <select
               value={advancedData.recipients}
-              onChange={(e) => setAdvancedData({ ...advancedData, recipients: e.target.value })}
+              onChange={e => setAdvancedData({ ...advancedData, recipients: e.target.value })}
               className="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-white"
             >
               <option value="going">Going</option>
@@ -211,11 +200,13 @@ const Blasts = ({ eventId }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Subject (Optional)</label>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Subject (Optional)
+            </label>
             <input
               type="text"
               value={advancedData.subject}
-              onChange={(e) => setAdvancedData({ ...advancedData, subject: e.target.value })}
+              onChange={e => setAdvancedData({ ...advancedData, subject: e.target.value })}
               className="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-white"
             />
           </div>
@@ -224,7 +215,7 @@ const Blasts = ({ eventId }) => {
             <label className="block text-sm font-medium text-gray-300 mb-2">Message</label>
             <textarea
               value={advancedData.message}
-              onChange={(e) => setAdvancedData({ ...advancedData, message: e.target.value })}
+              onChange={e => setAdvancedData({ ...advancedData, message: e.target.value })}
               className="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-white min-h-[100px]"
             />
           </div>
@@ -235,7 +226,13 @@ const Blasts = ({ eventId }) => {
             </Button>
             <div className="space-x-3">
               <Button variant="secondary">Schedule</Button>
-              <Button onClick={() => {/* Handle send blast */}}>Send</Button>
+              <Button
+                onClick={() => {
+                  /* Handle send blast */
+                }}
+              >
+                Send
+              </Button>
             </div>
           </div>
         </div>
@@ -261,10 +258,12 @@ const Blasts = ({ eventId }) => {
               <input
                 type="checkbox"
                 checked={reminderSettings.enabled}
-                onChange={(e) => setReminderSettings({
-                  ...reminderSettings,
-                  enabled: e.target.checked
-                })}
+                onChange={e =>
+                  setReminderSettings({
+                    ...reminderSettings,
+                    enabled: e.target.checked
+                  })
+                }
                 className="w-5 h-5 bg-gray-700 border-2 border-gray-500 rounded checked:bg-blue-500 checked:border-blue-500"
               />
             </div>
@@ -274,7 +273,7 @@ const Blasts = ({ eventId }) => {
           {reminderSettings.enabled && (
             <div className="space-y-4">
               {reminderSettings.schedule.map((reminder, index) => (
-                <div 
+                <div
                   key={reminder.type}
                   className="flex items-center justify-between bg-gray-700/50 p-4 rounded-lg"
                 >
@@ -293,7 +292,7 @@ const Blasts = ({ eventId }) => {
                     <input
                       type="checkbox"
                       checked={reminder.enabled}
-                      onChange={(e) => {
+                      onChange={e => {
                         const newSchedule = [...reminderSettings.schedule];
                         newSchedule[index].enabled = e.target.checked;
                         setReminderSettings({
@@ -311,16 +310,10 @@ const Blasts = ({ eventId }) => {
 
           {/* Action Buttons */}
           <div className="flex justify-end space-x-3 pt-4 border-t border-gray-700">
-            <Button
-              variant="secondary"
-              onClick={() => setIsReminderModalOpen(false)}
-            >
+            <Button variant="secondary" onClick={() => setIsReminderModalOpen(false)}>
               Cancel
             </Button>
-            <Button
-              variant="primary"
-              onClick={handleUpdateReminders}
-            >
+            <Button variant="primary" onClick={handleUpdateReminders}>
               Save Changes
             </Button>
           </div>
@@ -339,10 +332,12 @@ const Blasts = ({ eventId }) => {
             <input
               type="checkbox"
               checked={feedbackSettings.enabled}
-              onChange={(e) => setFeedbackSettings({
-                ...feedbackSettings,
-                enabled: e.target.checked
-              })}
+              onChange={e =>
+                setFeedbackSettings({
+                  ...feedbackSettings,
+                  enabled: e.target.checked
+                })
+              }
               className="form-checkbox h-5 w-5 text-blue-600 bg-gray-700 border-gray-600 rounded"
             />
           </div>
@@ -355,10 +350,12 @@ const Blasts = ({ eventId }) => {
                 </label>
                 <select
                   value={feedbackSettings.delay}
-                  onChange={(e) => setFeedbackSettings({
-                    ...feedbackSettings,
-                    delay: e.target.value
-                  })}
+                  onChange={e =>
+                    setFeedbackSettings({
+                      ...feedbackSettings,
+                      delay: e.target.value
+                    })
+                  }
                   className="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-white"
                 >
                   <option value="24">24 hours</option>
@@ -373,10 +370,12 @@ const Blasts = ({ eventId }) => {
                 </label>
                 <select
                   value={feedbackSettings.template}
-                  onChange={(e) => setFeedbackSettings({
-                    ...feedbackSettings,
-                    template: e.target.value
-                  })}
+                  onChange={e =>
+                    setFeedbackSettings({
+                      ...feedbackSettings,
+                      template: e.target.value
+                    })
+                  }
                   className="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-white"
                 >
                   <option value="default">Default Template</option>
@@ -391,9 +390,7 @@ const Blasts = ({ eventId }) => {
             <Button variant="secondary" onClick={() => setIsFeedbackModalOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleUpdateFeedback}>
-              Save Changes
-            </Button>
+            <Button onClick={handleUpdateFeedback}>Save Changes</Button>
           </div>
         </div>
       </Modal>
@@ -401,4 +398,4 @@ const Blasts = ({ eventId }) => {
   );
 };
 
-export default Blasts; 
+export default Blasts;

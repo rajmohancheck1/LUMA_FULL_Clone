@@ -5,4 +5,4 @@ const FacebookIcon = ({ className }) => (
 );
 
 export { FacebookIcon };
-export default FacebookIcon; 
+export default FacebookIcon;

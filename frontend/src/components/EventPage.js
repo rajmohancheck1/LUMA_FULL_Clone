@@ -4,18 +4,18 @@ import { Button } from './components/ui/button';
 
 export default function Preview() {
   const mockData = {
-    eventTitle: "New Year Celebration 2025",
+    eventTitle: 'New Year Celebration 2025',
     date: {
-      month: "JAN",
-      day: "2",
-      fullDate: "Thursday, January 2",
-      time: "10:00 PM - 11:00 PM",
+      month: 'JAN',
+      day: '2',
+      fullDate: 'Thursday, January 2',
+      time: '10:00 PM - 11:00 PM'
     },
     user: {
-      name: "Isaac Jeddiah",
-      email: "isaacjeddiah@gmail.com",
+      name: 'Isaac Jeddiah',
+      email: 'isaacjeddiah@gmail.com'
     },
-    hasManageAccess: true,
+    hasManageAccess: true
   };
 
   return (
@@ -36,12 +36,12 @@ const EventRegistration = ({
   hasManageAccess,
   onRegister,
   onManage,
-  onContactHost,
+  onContactHost
 }) => {
   const [isRegistered, setIsRegistered] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [showHostForm, setShowHostForm] = useState(false);
-  const [contactMessage, setContactMessage] = useState("");
+  const [contactMessage, setContactMessage] = useState('');
 
   const handleRegister = () => {
     setIsRegistered(true);
@@ -139,7 +139,7 @@ const EventRegistration = ({
             <h3 className="text-lg font-medium mb-4">Contact the Host</h3>
             <textarea
               value={contactMessage}
-              onChange={(e) => setContactMessage(e.target.value)}
+              onChange={e => setContactMessage(e.target.value)}
               className="w-full p-3 border border-neutral-600 rounded-lg mb-4 bg-[#121212] text-white"
               rows="4"
               placeholder="Write your message here..."

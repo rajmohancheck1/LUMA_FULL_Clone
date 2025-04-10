@@ -24,7 +24,7 @@ const Dashboard = () => {
     try {
       setLoading(true);
       setError('');
-      
+
       // Get events created by the logged-in user
       const [eventsRes, rsvpsRes] = await Promise.all([
         api.get('/api/events/my-events'),
@@ -42,11 +42,7 @@ const Dashboard = () => {
   };
 
   if (!user) {
-    return (
-      <div className="text-center py-8">
-        Please log in to view your dashboard.
-      </div>
-    );
+    return <div className="text-center py-8">Please log in to view your dashboard.</div>;
   }
 
   if (loading) {

@@ -7,4 +7,4 @@ export const GoogleIcon = ({ className }) => (
   </svg>
 );
 
-export default GoogleIcon; 
+export default GoogleIcon;

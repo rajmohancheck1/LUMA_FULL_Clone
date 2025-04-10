@@ -304,12 +304,12 @@
 .upcoming-event-card:hover {
   transform: translateY(-4px);
 }
-  
+
 .thumbnail-container {
   position: relative;
-   width: 100%; 
-  padding-top: 56.25%; 
-} 
+  width: 100%;
+  padding-top: 56.25%;
+}
 
 .thumbnail-container img {
   position: absolute;
@@ -503,7 +503,8 @@
   font-size: 14px;
 }
 
-.event-datetime, .event-attendees {
+.event-datetime,
+.event-attendees {
   color: #adadb8;
   font-size: 14px;
   white-space: nowrap;
@@ -585,7 +586,8 @@
   font-size: 14px;
 }
 
-.event-datetime, .event-attendees {
+.event-datetime,
+.event-attendees {
   color: #adadb8;
   font-size: 14px;
   white-space: nowrap;

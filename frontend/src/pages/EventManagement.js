@@ -35,14 +35,15 @@ const EventManagement = () => {
     }
   };
 
-  const handleUpdateEvent = async (updatedData) => {
+  const handleUpdateEvent = async updatedData => {
     try {
       const config = {
         headers: {
-          'Content-Type': updatedData instanceof FormData ? 'multipart/form-data' : 'application/json'
+          'Content-Type':
+            updatedData instanceof FormData ? 'multipart/form-data' : 'application/json'
         }
       };
-      
+
       const res = await api.put(`/api/events/${id}`, updatedData, config);
       await fetchEventDetails(); // Fetch fresh data after update
       return res.data;
@@ -53,7 +54,7 @@ const EventManagement = () => {
     }
   };
 
-  const handleSendBlast = async (blastData) => {
+  const handleSendBlast = async blastData => {
     try {
       await api.post(`/api/events/${id}/blast`, blastData);
       showNotification('Email blast sent successfully', 'success');
@@ -80,10 +81,7 @@ const EventManagement = () => {
               <h1 className="text-xl font-semibold text-white">{event.title}</h1>
             </div>
             <div className="flex items-center space-x-4">
-              <Link 
-                to={`/events/${id}`} 
-                className="text-gray-400 hover:text-white"
-              >
+              <Link to={`/events/${id}`} className="text-gray-400 hover:text-white">
                 Preview Event
               </Link>
             </div>
@@ -95,34 +93,44 @@ const EventManagement = () => {
       <div className="max-w-[2000px] mx-auto px-4 pb-8">
         <Tab.Group>
           <Tab.List className="flex space-x-1 bg-gray-800 p-1 mt-6 rounded-lg">
-            <Tab className={({ selected }) =>
-              `w-full py-2.5 text-sm font-medium leading-5 text-white rounded-lg
+            <Tab
+              className={({ selected }) =>
+                `w-full py-2.5 text-sm font-medium leading-5 text-white rounded-lg
               ${selected ? 'bg-blue-600' : 'text-gray-400 hover:bg-gray-700 hover:text-white'}`
-            }>
+              }
+            >
               Overview
             </Tab>
-            <Tab className={({ selected }) =>
-              `w-full py-2.5 text-sm font-medium leading-5 text-white rounded-lg
+            <Tab
+              className={({ selected }) =>
+                `w-full py-2.5 text-sm font-medium leading-5 text-white rounded-lg
               ${selected ? 'bg-blue-600' : 'text-gray-400 hover:bg-gray-700 hover:text-white'}`
-            }>
+              }
+            >
               Guests
             </Tab>
-            <Tab className={({ selected }) =>
-              `w-full py-2.5 text-sm font-medium leading-5 text-white rounded-lg
+            <Tab
+              className={({ selected }) =>
+                `w-full py-2.5 text-sm font-medium leading-5 text-white rounded-lg
               ${selected ? 'bg-blue-600' : 'text-gray-400 hover:bg-gray-700 hover:text-white'}`
-            }>
+              }
+            >
               Email Blasts
             </Tab>
-            <Tab className={({ selected }) =>
-              `w-full py-2.5 text-sm font-medium leading-5 text-white rounded-lg
+            <Tab
+              className={({ selected }) =>
+                `w-full py-2.5 text-sm font-medium leading-5 text-white rounded-lg
               ${selected ? 'bg-blue-600' : 'text-gray-400 hover:bg-gray-700 hover:text-white'}`
-            }>
+              }
+            >
               Settings
             </Tab>
-            <Tab className={({ selected }) =>
-              `w-full py-2.5 text-sm font-medium leading-5 text-white rounded-lg
+            <Tab
+              className={({ selected }) =>
+                `w-full py-2.5 text-sm font-medium leading-5 text-white rounded-lg
               ${selected ? 'bg-blue-600' : 'text-gray-400 hover:bg-gray-700 hover:text-white'}`
-            }>
+              }
+            >
               Insights
             </Tab>
           </Tab.List>

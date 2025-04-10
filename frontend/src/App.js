@@ -6,13 +6,11 @@ import AppRoutes from './routes/AppRoutes';
 function App() {
   return (
     <Router>
-      
-        <AuthProvider>
-          <NotificationProvider>
-            <AppRoutes />
-          </NotificationProvider>
-        </AuthProvider>
-     
+      <AuthProvider>
+        <NotificationProvider>
+          <AppRoutes />
+        </NotificationProvider>
+      </AuthProvider>
     </Router>
   );
 }
